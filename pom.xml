@@ -11,8 +11,11 @@
 	</parent>
 
 	<name>Explore With Me</name>
+    <modules>
+        <module>TheFunctionalityOfTheStatisticsService</module>
+    </modules>
 
-	<groupId>ru.practicum</groupId>
+    <groupId>ru.practicum</groupId>
 	<artifactId>explore-with-me</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
@@ -53,6 +56,10 @@
 						</execution>
 					</executions>
 					<dependencies>
+						<dependency>
+							<groupId>org.springframework.boot</groupId>
+							<artifactId>spring-boot-starter-actuator</artifactId>
+						</dependency>
 						<dependency>
 							<groupId>com.puppycrawl.tools</groupId>
 							<artifactId>checkstyle</artifactId>
