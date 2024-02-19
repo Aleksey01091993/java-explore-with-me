@@ -1,9 +1,9 @@
 version: '3.8'
 services:
-  theFunctionalityOfTheStatisticsService:
-    build: /TheFunctionalityOfTheStatisticsService
+  stats-server:
+    build: /stats/stats-server
     image: service_image
-    container_name: theFunctionalityOfTheStatisticsService_container
+    container_name: stats-server
     ports:
       - "9090:9090"
     depends_on:
