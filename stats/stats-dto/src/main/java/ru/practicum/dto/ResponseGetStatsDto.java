@@ -9,7 +9,7 @@ import lombok.Data;
 @Builder
 public class ResponseGetStatsDto {
     private String app;
-    private String url;
+    private String uri;
     private Integer hits;
 
 }

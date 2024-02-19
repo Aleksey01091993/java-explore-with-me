@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class ResponseStatsDto {
     private Long id;
     private String app;
-    private String url;
+    private String uri;
     private String ip;
     private LocalDateTime timesTamp;
 }

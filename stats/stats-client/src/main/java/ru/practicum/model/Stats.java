@@ -20,8 +20,8 @@ public class Stats {
     private Long id;
     @Column(name = "app")
     private String app;
-    @Column(name = "url")
-    private String url;
+    @Column(name = "uri")
+    private String uri;
     @Column(name = "ip")
     private String ip;
     @Column(name = "time_tamp")

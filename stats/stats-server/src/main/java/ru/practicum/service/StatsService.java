@@ -5,7 +5,8 @@ import org.springframework.stereotype.Service;
 import ru.practicum.dto.RequestStatsDto;
 import ru.practicum.dto.ResponseGetStatsDto;
 import ru.practicum.dto.ResponseStatsDto;
-import ru.practicum.dto.mapper.MapperToStats;
+import ru.practicum.mapper.MapperToStats;
+import ru.practicum.model.Stats;
 import ru.practicum.repository.StatsRepository;
 
 import java.time.LocalDateTime;
@@ -38,13 +39,13 @@ public class StatsService {
             unique = false;
         }
         if (uris == null && !unique) {
-            return MapperToStats.toResponseGetStats(repository.findByTimesTampBetween(start, end));
+            return MapperToStats.toResponseGetStats(repository.findByTimesTampBetween(start, end), unique);
         } else if (uris == null) {
-            return MapperToStats.toResponseGetStats(repository.findDistinctByTimesTampBetween(start, end));
+            return MapperToStats.toResponseGetStats(repository.findDistinctByTimesTampBetween(start, end), unique);
         } else if (unique) {
-            return MapperToStats.toResponseGetStats(repository.findDistinctByUrlInAndTimesTampBetween(uris, start, end));
+            return MapperToStats.toResponseGetStats(repository.findDistinctByUriInAndTimesTampBetween(uris, start, end), unique);
         } else {
-            return MapperToStats.toResponseGetStats(repository.findByTimesTampBetweenAndUrlIn(start, end, uris));
+            return MapperToStats.toResponseGetStats(repository.findByTimesTampBetweenAndUriIn(start, end, uris), unique);
         }
     }
 }

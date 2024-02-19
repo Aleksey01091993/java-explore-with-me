@@ -1,5 +1,7 @@
 package ru.practicum.controller;
 
+
+import com.sun.istack.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
@@ -10,7 +12,7 @@ import ru.practicum.dto.ResponseStatsDto;
 import ru.practicum.service.StatsService;
 
 
-import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
 @RestController
@@ -40,9 +42,9 @@ public class StatsController {
                     @RequestParam @Nullable List<String> uris,
                     @RequestParam @Nullable Boolean unique
             ) {
-        log.info("Пришел GET запрос /stats с параметрами, start:{}, end:{}, uris:{}, unique:{}", start, end, unique, unique);
+        log.info("Пришел GET запрос /stats с параметрами, start:{}, end:{}, uris:{}, unique:{}", start, end, uris, unique);
         List<ResponseGetStatsDto> response = service.get(start, end, uris, unique);
-        log.info("Отправлен ответ для GET запроса /stats с параметрами, start:{}, end:{}, uris:{}, unique:{} ответ:{}", start, end, unique, unique, response);
+        log.info("Отправлен ответ для GET запроса /stats с параметрами, start:{}, end:{}, uris:{}, unique:{} ответ:{}", start, end, uris, unique, response);
         return  response;
     }
 }

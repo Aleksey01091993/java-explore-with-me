@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 public class RequestStatsDto {
     private String app;
-    private String url;
+    private String uri;
     private String ip;
+    private String timestamp;
 }

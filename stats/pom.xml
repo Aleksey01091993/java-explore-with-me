@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>stats</artifactId>
+    <packaging>pom</packaging>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
