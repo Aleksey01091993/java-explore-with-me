@@ -16,7 +16,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping(path = "admin/users")
+@RequestMapping(path = "/admin/users")
 public class UserController {
     private final UserService service;
 
@@ -26,7 +26,7 @@ public class UserController {
     ) {
         log.info("Пришел POST запрос admin/users с телом: {}", user);
         UserDto userResponse = service.add(user);
-        log.info("Отправлен ответ для POST запроса /users с телом: {}", userResponse);
+        log.info("Отправлен ответ для POST запроса /admin/users с телом: {}", userResponse);
         return userResponse;
     }
 
