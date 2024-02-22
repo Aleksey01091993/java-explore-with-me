@@ -1,12 +1,10 @@
 package ru.practicum.exploreWithMe.stats.mapper;
 
 
-
 import ru.practicum.exploreWithMe.stats.dto.RequestStatsDto;
 import ru.practicum.exploreWithMe.stats.dto.ResponseGetStatsDto;
 import ru.practicum.exploreWithMe.stats.dto.ResponseStatsDto;
 import ru.practicum.exploreWithMe.stats.model.Stats;
-
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -39,7 +37,7 @@ public class MapperToStats {
         Map<String, List<Stats>> map = new HashMap<>();
         Map<String, Set<String>> setMap = new HashMap<>();
         if (in) {
-            for (Stats u:stats) {
+            for (Stats u : stats) {
                 if (setMap.containsKey(u.getUri())) {
                     setMap.get(u.getUri()).add(u.getIp());
                 } else {
@@ -47,7 +45,7 @@ public class MapperToStats {
                     setMap.get(u.getUri()).add(u.getIp());
                 }
             }
-            for (String key: setMap.keySet()) {
+            for (String key : setMap.keySet()) {
                 responseGetStatsDto.add(
                         ResponseGetStatsDto.builder()
                                 .uri(key)
@@ -57,7 +55,7 @@ public class MapperToStats {
                 );
             }
         } else {
-            for (Stats s: stats) {
+            for (Stats s : stats) {
                 if (map.containsKey(s.getUri())) {
                     map.get(s.getUri()).add(s);
                 } else {
@@ -65,7 +63,7 @@ public class MapperToStats {
                     map.get(s.getUri()).add(s);
                 }
             }
-            for (String key: map.keySet()) {
+            for (String key : map.keySet()) {
                 responseGetStatsDto.add(
                         ResponseGetStatsDto.builder()
                                 .uri(key)

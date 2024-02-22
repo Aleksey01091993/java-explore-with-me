@@ -11,8 +11,6 @@ import ru.practicum.exploreWithMe.stats.dto.ResponseGetStatsDto;
 import ru.practicum.exploreWithMe.stats.dto.ResponseStatsDto;
 import ru.practicum.exploreWithMe.stats.service.StatsService;
 
-
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -45,6 +43,6 @@ public class StatsController {
         log.info("Пришел GET запрос /stats с параметрами, start:{}, end:{}, uris:{}, unique:{}", start, end, uris, unique);
         List<ResponseGetStatsDto> response = service.get(start, end, uris, unique);
         log.info("Отправлен ответ для GET запроса /stats с параметрами, start:{}, end:{}, uris:{}, unique:{} ответ:{}", start, end, uris, unique, response);
-        return  response;
+        return response;
     }
 }

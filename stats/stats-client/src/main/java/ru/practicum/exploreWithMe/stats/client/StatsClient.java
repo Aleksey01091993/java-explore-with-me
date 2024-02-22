@@ -77,7 +77,8 @@ public class StatsClient {
                     .header(HttpHeaders.ACCEPT, "application/json")
                     .build();
             HttpResponse<String> response = httpClient.send(statsRequest, HttpResponse.BodyHandlers.ofString());
-            return json.readValue(response.body(), new TypeReference<>() {});
+            return json.readValue(response.body(), new TypeReference<>() {
+            });
         } catch (Exception e) {
             log.warn("I can't get statistics", e);
             return null;
