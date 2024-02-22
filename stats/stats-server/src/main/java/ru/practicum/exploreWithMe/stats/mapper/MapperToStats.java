@@ -1,11 +1,11 @@
-package ru.practicum.mapper;
+package ru.practicum.exploreWithMe.stats.mapper;
 
 
 
-import ru.practicum.dto.RequestStatsDto;
-import ru.practicum.dto.ResponseGetStatsDto;
-import ru.practicum.dto.ResponseStatsDto;
-import ru.practicum.model.Stats;
+import ru.practicum.exploreWithMe.stats.dto.RequestStatsDto;
+import ru.practicum.exploreWithMe.stats.dto.ResponseGetStatsDto;
+import ru.practicum.exploreWithMe.stats.dto.ResponseStatsDto;
+import ru.practicum.exploreWithMe.stats.model.Stats;
 
 
 import java.time.LocalDateTime;

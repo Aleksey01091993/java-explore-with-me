@@ -1,4 +1,4 @@
-package ru.practicum.controller;
+package ru.practicum.exploreWithMe.stats.controller;
 
 
 import com.sun.istack.NotNull;
@@ -6,13 +6,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.dto.RequestStatsDto;
-import ru.practicum.dto.ResponseGetStatsDto;
-import ru.practicum.dto.ResponseStatsDto;
-import ru.practicum.service.StatsService;
+import ru.practicum.exploreWithMe.stats.dto.RequestStatsDto;
+import ru.practicum.exploreWithMe.stats.dto.ResponseGetStatsDto;
+import ru.practicum.exploreWithMe.stats.dto.ResponseStatsDto;
+import ru.practicum.exploreWithMe.stats.service.StatsService;
 
 
-
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController

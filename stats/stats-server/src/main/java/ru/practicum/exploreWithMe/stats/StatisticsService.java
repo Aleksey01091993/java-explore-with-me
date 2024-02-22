@@ -1,4 +1,4 @@
-package ru.practicum;
+package ru.practicum.exploreWithMe.stats;
 
 
 import org.springframework.boot.SpringApplication;

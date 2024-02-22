@@ -1,4 +1,4 @@
-package ru.practicum.model;
+package ru.practicum.exploreWithMe.stats.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
