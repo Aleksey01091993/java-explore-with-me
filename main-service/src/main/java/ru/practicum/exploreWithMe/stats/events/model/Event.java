@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @Table(name = "events")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Event implements EntityPath<Object> {
+public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
