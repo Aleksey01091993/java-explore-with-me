@@ -1,5 +1,6 @@
 package ru.practicum.exploreWithMe.stats.events.model;
 
+import com.querydsl.core.types.EntityPath;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +18,7 @@ import java.time.LocalDateTime;
 @Table(name = "events")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Event {
+public class Event implements EntityPath<Object> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

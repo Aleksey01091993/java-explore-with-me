@@ -1,5 +1,6 @@
 package ru.practicum.exploreWithMe.stats.events.service;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -13,12 +14,15 @@ import ru.practicum.exploreWithMe.stats.events.mapper.EventsMapper;
 import ru.practicum.exploreWithMe.stats.events.model.Event;
 import ru.practicum.exploreWithMe.stats.events.repository.EventsRepository;
 import ru.practicum.exploreWithMe.stats.exception.NotFoundException;
+import ru.practicum.exploreWithMe.stats.querydsl.EventFilterModel;
+import ru.practicum.exploreWithMe.stats.querydsl.EventPredicatesBuilder;
 import ru.practicum.exploreWithMe.stats.users.model.User;
 import ru.practicum.exploreWithMe.stats.users.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -65,74 +69,25 @@ public class EventService {
     }
 
     public List<EventShortDto> getAll
-            (String text, List<Long> categories, Boolean paid, String rangeStart, String rangeEnd,
-             Boolean onlyAvailable, String sort, Integer from, Integer size) {
-        LocalDateTime start;
-        LocalDateTime end;
-        Sort orderBy;
-        if (sort.equals("EVENT_DATE")) {
-            orderBy = Sort.by(Sort.Direction.ASC, "eventDate");
-        } else if (sort.equals("VIEWS"))
-            orderBy = Sort.by(Sort.Direction.ASC, "views");
-        else {
-            orderBy = Sort.unsorted();
-        }
-        if (categories == null) {
-            categories = categoriesRepository.findAll().stream()
-                    .map(Categories::getId)
-                    .collect(Collectors.toList());
-        }
-        if (rangeStart == null) {
-            start = LocalDateTime.MIN;
-        } else {
-            start = LocalDateTime.parse(rangeStart, DTF);
-        }
-        if (rangeEnd == null) {
-            end = LocalDateTime.MAX;
-        } else {
-            end = LocalDateTime.parse(rangeEnd, DTF);
-        }
-        if (onlyAvailable == null) {
-            onlyAvailable = false;
-        }
-        if (onlyAvailable && paid == null) {
-            return repository
-                    .findAllByDescriptionContainingIgnoreCaseOrAnnotationContainingIgnoreCaseAndCategory_IdInAndEventDateBeforeAndEventDateAfter(
-                            text, text, categories, start, end, PageRequest.of(from / size, size), orderBy
-                    ).stream()
-                    .filter(o1 -> o1.getConfirmedRequest() < o1.getParticipantLimit())
-                    .map(EventsMapper::toGetAll)
-                    .collect(Collectors.toList());
-        } else if (!onlyAvailable && paid == null) {
-            return repository
-                    .findAllByDescriptionContainingIgnoreCaseOrAnnotationContainingIgnoreCaseAndCategory_IdInAndEventDateBeforeAndEventDateAfter(
-                            text, text, categories, start, end, PageRequest.of(from / size, size), orderBy
-                    ).stream()
-                    .map(EventsMapper::toGetAll)
-                    .collect(Collectors.toList());
-        } else if (!onlyAvailable && paid) {
-            return repository
-                    .findAllByDescriptionContainingIgnoreCaseOrAnnotationContainingIgnoreCaseAndCategory_IdInAndPaidAndEventDateBeforeAndEventDateAfter(
-                            text, text, categories, paid, start, end, PageRequest.of(from / size, size), orderBy
-                    ).stream()
-                    .map(EventsMapper::toGetAll)
-                    .collect(Collectors.toList());
-        } else {
-            return repository
-                    .findAllByDescriptionContainingIgnoreCaseOrAnnotationContainingIgnoreCaseAndCategory_IdInAndPaidAndEventDateBeforeAndEventDateAfter(
-                            text, text, categories, paid, start, end, PageRequest.of(from / size, size), orderBy
-                    ).stream()
-                    .filter(o1 -> o1.getConfirmedRequest() < o1.getParticipantLimit())
-                    .map(EventsMapper::toGetAll)
-                    .collect(Collectors.toList());
-        }
-    }
-
-    public EventFullDto get(Long eventId) {
-        return EventsMapper.toEventFullDto(
-                repository.findById(eventId)
-                        .orElseThrow(() -> new NotFoundException("event not found by id: " + eventId + "," + eventId))
-        );
+            (EventFilterModel filter) {
+        EventPredicatesBuilder builder = new EventPredicatesBuilder();
+        Optional.ofNullable(filter.getText())
+                .ifPresent(o1 -> builder.with("text", filter.getText()));
+        Optional.ofNullable(filter.getCategories())
+                .ifPresent(o1 -> builder.with("category", filter.getCategories()));
+        Optional.ofNullable(filter.getPaid())
+                .ifPresent(o1 -> builder.with("paid", filter.getPaid()));
+        Optional.ofNullable(filter.getRangeStart())
+                .ifPresent(o1 -> builder.with("eventStart", filter.getRangeStart()));
+        Optional.ofNullable(filter.getRangeEnd())
+                .ifPresent(o1 -> builder.with("eventEnd", filter.getRangeEnd()));
+        Optional.ofNullable(filter.getOnlyAvailable())
+                .ifPresent(o1 -> builder.with("available", filter.getOnlyAvailable()));
+        BooleanExpression expression = builder.build();
+        return repository.findAll(expression, filter.getPageable())
+                .stream()
+                .map(EventsMapper::toGetAll)
+                .collect(Collectors.toList());
     }
 
 

@@ -1,15 +1,16 @@
 package ru.practicum.exploreWithMe.stats.events.mapper;
 
 
-
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import ru.practicum.exploreWithMe.stats.categories.mapper.MapperCategories;
 import ru.practicum.exploreWithMe.stats.categories.model.Categories;
 import ru.practicum.exploreWithMe.stats.events.dto.EventFullDto;
 import ru.practicum.exploreWithMe.stats.events.dto.EventShortDto;
 import ru.practicum.exploreWithMe.stats.events.dto.NewEventDto;
 import ru.practicum.exploreWithMe.stats.events.model.Event;
+import ru.practicum.exploreWithMe.stats.querydsl.EventFilterModel;
 import ru.practicum.exploreWithMe.stats.users.mapper.UserMapper;
-import ru.practicum.exploreWithMe.stats.users.model.User;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -17,6 +18,28 @@ import java.util.List;
 
 public class EventsMapper {
     private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    public static EventFilterModel toEventFilter(
+            String text, List<Long> categories, Boolean paid, String rangeStart, String rangeEnd,
+            Boolean onlyAvailable, String sort, Integer from, Integer size) {
+        Sort orderBy;
+        if (sort.equals("EVENT_DATE")) {
+            orderBy = Sort.by("eventDate");
+        } else if (sort.equals("VIEWS"))
+            orderBy = Sort.by("views");
+        else {
+            orderBy = Sort.unsorted();
+        }
+        return EventFilterModel.builder()
+                .text(text)
+                .categories(categories)
+                .paid(paid)
+                .rangeStart(LocalDateTime.parse(rangeStart, DTF))
+                .rangeEnd(LocalDateTime.parse(rangeEnd, DTF))
+                .onlyAvailable(onlyAvailable)
+                .pageable(PageRequest.of(from / size, size, orderBy))
+                .build();
+    }
     public static Event toEvent(NewEventDto event) {
         return Event.builder()
                 .annotation(event.getAnnotation())
