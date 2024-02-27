@@ -1,4 +1,4 @@
-package ru.practicum.exploreWithMe.stats.events.dto;
+package ru.practicum.exploreWithMe.stats.request.dto;
 
 import lombok.Builder;
 import lombok.Data;

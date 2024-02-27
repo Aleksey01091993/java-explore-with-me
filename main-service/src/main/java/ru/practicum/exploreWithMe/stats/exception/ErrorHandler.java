@@ -39,5 +39,12 @@ public class ErrorHandler {
         return new ErrorResponse(e.getMessage());
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse conflict(final ConflictError e) {
+        log.info(e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
+
 }
 

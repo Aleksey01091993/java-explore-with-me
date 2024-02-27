@@ -14,7 +14,6 @@ import java.util.List;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 public class EventFilterModel {
-
     private String text;
     private List<Status> statuses;
     private List<Long> usersId;
