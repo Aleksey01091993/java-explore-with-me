@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import ru.practicum.exploreWithMe.stats.events.model.Status;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,6 +16,8 @@ import java.util.List;
 public class EventFilterModel {
 
     private String text;
+    private List<Status> statuses;
+    private List<Long> usersId;
     private List<Long> categories;
     private Boolean paid;
     private LocalDateTime rangeStart;

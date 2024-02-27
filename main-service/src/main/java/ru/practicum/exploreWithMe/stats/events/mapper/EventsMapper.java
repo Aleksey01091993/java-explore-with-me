@@ -9,12 +9,14 @@ import ru.practicum.exploreWithMe.stats.events.dto.EventFullDto;
 import ru.practicum.exploreWithMe.stats.events.dto.EventShortDto;
 import ru.practicum.exploreWithMe.stats.events.dto.NewEventDto;
 import ru.practicum.exploreWithMe.stats.events.model.Event;
+import ru.practicum.exploreWithMe.stats.events.model.Status;
 import ru.practicum.exploreWithMe.stats.querydsl.EventFilterModel;
 import ru.practicum.exploreWithMe.stats.users.mapper.UserMapper;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class EventsMapper {
     private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -38,6 +40,30 @@ public class EventsMapper {
                 .rangeEnd(LocalDateTime.parse(rangeEnd, DTF))
                 .onlyAvailable(onlyAvailable)
                 .pageable(PageRequest.of(from / size, size, orderBy))
+                .build();
+    }
+    public static EventFilterModel toEventFilterAdmin(List<String> states, List<Long> usersId,
+            List<Long> categories, String rangeStart, String rangeEnd, Integer from, Integer size) {
+        List<Status> statuses = states.stream()
+                .map(o1 -> {
+                    switch (o1) {
+                        case "PENDING":
+                            return Status.PENDING;
+                        case "PUBLISHED":
+                            return Status.PUBLISHED;
+                        case "CANCELED":
+                            return Status.CANCELED;
+                        default: return null;
+                    }
+                })
+                .collect(Collectors.toList());
+        return EventFilterModel.builder()
+                .statuses(statuses)
+                .categories(categories)
+                .usersId(usersId)
+                .rangeStart(LocalDateTime.parse(rangeStart, DTF))
+                .rangeEnd(LocalDateTime.parse(rangeEnd, DTF))
+                .pageable(PageRequest.of(from / size, size))
                 .build();
     }
     public static Event toEvent(NewEventDto event) {

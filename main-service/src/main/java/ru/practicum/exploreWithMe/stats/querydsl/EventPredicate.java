@@ -4,6 +4,8 @@ import com.querydsl.core.types.dsl.*;
 import lombok.AllArgsConstructor;
 import ru.practicum.exploreWithMe.stats.categories.model.Categories;
 import ru.practicum.exploreWithMe.stats.events.model.Event;
+import ru.practicum.exploreWithMe.stats.events.model.Status;
+import ru.practicum.exploreWithMe.stats.users.model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,8 +18,13 @@ public class EventPredicate {
     public BooleanExpression getPredicate() {
 
         PathBuilder<Event> entityPath = new PathBuilder<>(Event.class, "event");
-
-        if (criteria.getKey().equals("category")) {
+        if (criteria.getKey().equals("users")) {
+            PathBuilder<User> path = entityPath.get("initiator", User.class);
+            return path.get("id", Long.class).in((List<Long>) criteria.getValue());
+        } else if (criteria.getKey().equals("states")) {
+            EnumPath<Status> path = entityPath.getEnum("state", Status.class);
+            return path.in((List<Status>) criteria.getValue());
+        } else if (criteria.getKey().equals("category")) {
             PathBuilder<Categories> path = entityPath.get(criteria.getKey(), Categories.class);
                     return path.get("id", Long.class).in((List<Long>) criteria.getValue());
         } else if (criteria.getKey().equals("text")) {

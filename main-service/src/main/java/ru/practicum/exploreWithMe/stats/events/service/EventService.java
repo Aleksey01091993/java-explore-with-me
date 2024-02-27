@@ -33,9 +33,7 @@ public class EventService {
     private final UserRepository userRepository;
     private final CategoriesRepository categoriesRepository;
 
-    private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-    public EventFullDto add(NewEventDto event, Long id) {
+    public EventFullDto create(NewEventDto event, Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("user not found by id: " + id));
         Categories categories = categoriesRepository.findById(event.getCategory())
@@ -68,8 +66,7 @@ public class EventService {
         );
     }
 
-    public List<EventShortDto> getAll
-            (EventFilterModel filter) {
+    public List<EventShortDto> getAll(EventFilterModel filter) {
         EventPredicatesBuilder builder = new EventPredicatesBuilder();
         Optional.ofNullable(filter.getText())
                 .ifPresent(o1 -> builder.with("text", filter.getText()));
@@ -89,6 +86,42 @@ public class EventService {
                 .map(EventsMapper::toGetAll)
                 .collect(Collectors.toList());
     }
+
+    public EventFullDto get(Long eventId) {
+        return EventsMapper.toEventFullDto(
+                repository.findById(eventId)
+                        .orElseThrow(() -> new NotFoundException("event not found by id: " + eventId))
+        );
+    }
+
+    public List<EventShortDto> getAllAdmin(EventFilterModel filter) {
+        EventPredicatesBuilder builder = new EventPredicatesBuilder();
+        Optional.ofNullable(filter.getUsersId())
+                .ifPresent(o1 -> builder.with("users", filter.getUsersId()));
+        Optional.ofNullable(filter.getCategories())
+                .ifPresent(o1 -> builder.with("category", filter.getCategories()));
+        Optional.ofNullable(filter.getStatuses())
+                .ifPresent(o1 -> builder.with("states", filter.getStatuses()));
+        Optional.ofNullable(filter.getRangeStart())
+                .ifPresent(o1 -> builder.with("eventStart", filter.getRangeStart()));
+        Optional.ofNullable(filter.getRangeEnd())
+                .ifPresent(o1 -> builder.with("eventEnd", filter.getRangeEnd()));
+        BooleanExpression expression = builder.build();
+        return repository.findAll(expression, filter.getPageable())
+                .stream()
+                .map(EventsMapper::toGetAll)
+                .collect(Collectors.toList());
+    }
+
+    public EventFullDto updateAdmin(NewEventDto event, Long eventId) {
+        Categories category = categoriesRepository.findById(event.getCategory())
+                .orElseThrow(() -> new NotFoundException("Category not found by id: " + event.getCategory()));
+        Event eventToUpdate = repository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException("event not found by id: " + eventId));
+        Event eventSave = EventsMapper.toUpdate(eventToUpdate, event, category);
+        return EventsMapper.toEventFullDto(repository.save(eventSave));
+    }
+
 
 
 }
