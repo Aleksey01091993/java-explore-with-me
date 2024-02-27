@@ -2,7 +2,6 @@ package ru.practicum.exploreWithMe.stats.compilations.dto;
 
 import lombok.Builder;
 import lombok.Data;
-import ru.practicum.exploreWithMe.stats.events.dto.EventShortDto;
 
 import java.util.List;
 
