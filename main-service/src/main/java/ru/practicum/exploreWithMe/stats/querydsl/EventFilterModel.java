@@ -4,8 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import ru.practicum.exploreWithMe.stats.events.model.Status;
+import ru.practicum.exploreWithMe.stats.statuses.Status;
 
 import java.time.LocalDateTime;
 import java.util.List;

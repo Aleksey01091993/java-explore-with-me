@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import ru.practicum.exploreWithMe.stats.categories.dto.CategoryDto;
 import ru.practicum.exploreWithMe.stats.events.model.Location;
-import ru.practicum.exploreWithMe.stats.events.model.Status;
+import ru.practicum.exploreWithMe.stats.statuses.Status;
 import ru.practicum.exploreWithMe.stats.users.dto.UserShortDto;
 
 

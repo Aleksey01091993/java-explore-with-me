@@ -4,7 +4,7 @@ import com.querydsl.core.types.dsl.*;
 import lombok.AllArgsConstructor;
 import ru.practicum.exploreWithMe.stats.categories.model.Categories;
 import ru.practicum.exploreWithMe.stats.events.model.Event;
-import ru.practicum.exploreWithMe.stats.events.model.Status;
+import ru.practicum.exploreWithMe.stats.statuses.Status;
 import ru.practicum.exploreWithMe.stats.users.model.User;
 
 import java.time.LocalDateTime;

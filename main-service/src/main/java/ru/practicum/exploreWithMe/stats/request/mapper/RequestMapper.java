@@ -1,7 +1,7 @@
 package ru.practicum.exploreWithMe.stats.request.mapper;
 
 import ru.practicum.exploreWithMe.stats.events.model.Event;
-import ru.practicum.exploreWithMe.stats.events.model.Status;
+import ru.practicum.exploreWithMe.stats.statuses.Status;
 import ru.practicum.exploreWithMe.stats.request.dto.ParticipationRequestDto;
 import ru.practicum.exploreWithMe.stats.request.model.Request;
 import ru.practicum.exploreWithMe.stats.users.model.User;

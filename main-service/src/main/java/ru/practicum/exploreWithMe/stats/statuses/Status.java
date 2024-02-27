@@ -1,4 +1,4 @@
-package ru.practicum.exploreWithMe.stats.events.model;
+package ru.practicum.exploreWithMe.stats.statuses;
 
 public enum Status {
     PENDING, PUBLISHED, CANCELED, CONFIRMED, REJECTED

@@ -3,19 +3,21 @@ package ru.practicum.exploreWithMe.stats.request.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.exploreWithMe.stats.events.model.Event;
-import ru.practicum.exploreWithMe.stats.events.model.Status;
 import ru.practicum.exploreWithMe.stats.events.repository.EventsRepository;
 import ru.practicum.exploreWithMe.stats.exception.ConflictError;
 import ru.practicum.exploreWithMe.stats.exception.NotFoundException;
+import ru.practicum.exploreWithMe.stats.request.dto.EventRequestStatusUpdateRequest;
 import ru.practicum.exploreWithMe.stats.request.dto.ParticipationRequestDto;
 import ru.practicum.exploreWithMe.stats.request.mapper.RequestMapper;
 import ru.practicum.exploreWithMe.stats.request.model.Request;
 import ru.practicum.exploreWithMe.stats.request.repository.RequestRepository;
+import ru.practicum.exploreWithMe.stats.statuses.Status;
 import ru.practicum.exploreWithMe.stats.users.model.User;
 import ru.practicum.exploreWithMe.stats.users.repository.UserRepository;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,7 +39,16 @@ public class RequestService {
         if (event.getInitiator().getId().equals(userId)) {
             throw new ConflictError("the initiator of the event cannot add a request to participate in his event");
         }
-        return RequestMapper.toDto(repository.save(RequestMapper.toCreate(user, event)));
+        if (Objects.equals(event.getConfirmedRequest(), event.getParticipantLimit())) {
+            throw new ConflictError("The limit of participation requests has been reached");
+        }
+        Request requestCreate = RequestMapper.toCreate(user, event);
+        if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
+            requestCreate.setStatus(Status.CONFIRMED);
+            event.setConfirmedRequest(event.getConfirmedRequest() + 1);
+            eventsRepository.save(event);
+        }
+        return RequestMapper.toDto(repository.save(requestCreate));
     }
 
     public ParticipationRequestDto canceled(Long eventId, Long userId) {
@@ -60,5 +71,36 @@ public class RequestService {
                 .map(RequestMapper::toDto).collect(Collectors.toList());
     }
 
+    public List<ParticipationRequestDto> update(Long userId, Long eventId, EventRequestStatusUpdateRequest request) {
+        Event event = eventsRepository.findFirstByIdAndInitiator_Id(eventId, userId)
+                .orElseThrow(() -> new NotFoundException("user or event not found by id: " + userId + "," + eventId));
+        if (Objects.equals(event.getConfirmedRequest(), event.getParticipantLimit())) {
+            throw new ConflictError("The limit of participation requests has been reached");
+        }
+        List<Request> search = repository.findAllByIdIn(request.getRequestIds());
+        for (Request req : search) {
+            if (req.getStatus() != Status.PENDING) {
+                throw new ConflictError("The status can only be changed for pending applications");
+            }
+        }
+        List<Request> response = new ArrayList<>();
+        for (Request value : search) {
+            if (event.getParticipantLimit() == 0 || !event.getRequestModeration()) {
+                response.add(value);
+                event.setConfirmedRequest(event.getConfirmedRequest() + 1);
+            } else {
+                if (!Objects.equals(event.getConfirmedRequest(), event.getParticipantLimit())) {
+                    value.setStatus(request.getStatus());
+                    response.add(value);
+                    event.setConfirmedRequest(event.getConfirmedRequest() + 1);
+                } else {
+                    value.setStatus(Status.REJECTED);
+                    response.add(value);
+                }
 
+            }
+        }
+        eventsRepository.save(event);
+        return repository.saveAll(response).stream().map(RequestMapper::toDto).collect(Collectors.toList());
+    }
 }
