@@ -22,4 +22,5 @@ public class EventFilterModel {
     private LocalDateTime rangeEnd;
     private Boolean onlyAvailable;
     private Pageable pageable;
+    private Status status;
 }

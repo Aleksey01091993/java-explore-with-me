@@ -43,9 +43,16 @@ public class CompilationService {
     }
 
     public List<CompilationDto> getAll(Boolean pinned, Integer from, Integer size) {
-        return repository.findAllByPinned(pinned, PageRequest.of(from / size, size)).stream()
-                .map(CompilationMapper::toCompilationDto)
-                .collect(Collectors.toList());
+        if (pinned == null) {
+            return repository.findAll(PageRequest.of(from / size, size)).stream()
+                    .map(CompilationMapper::toCompilationDto)
+                    .collect(Collectors.toList());
+        } else {
+            return repository.findAllByPinned(pinned, PageRequest.of(from / size, size)).stream()
+                    .map(CompilationMapper::toCompilationDto)
+                    .collect(Collectors.toList());
+        }
+
     }
 
     public CompilationDto get (Long compilationId) {

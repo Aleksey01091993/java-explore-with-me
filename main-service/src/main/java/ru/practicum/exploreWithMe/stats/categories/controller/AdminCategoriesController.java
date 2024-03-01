@@ -1,4 +1,4 @@
-package ru.practicum.exploreWithMe.stats.categories.controller.admin;
+package ru.practicum.exploreWithMe.stats.categories.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ public class AdminCategoriesController {
             @RequestBody NewCategoryDto category
     ) {
         log.info("Пришел POST запрос /admin/categories с телом: {}", category);
-        CategoryDto categoryResponse = service.add(category);
+        final CategoryDto categoryResponse = service.add(category);
         log.info("Отправлен ответ для POST запроса /admin/categories с телом: {}", categoryResponse);
         return categoryResponse;
     }
@@ -30,7 +30,7 @@ public class AdminCategoriesController {
             @RequestBody NewCategoryDto category
     ) {
         log.info("Пришел PATH запрос /admin/categories/{} с телом: {}", catId, category);
-        CategoryDto categoryResponse = service.update(category, catId);
+        final CategoryDto categoryResponse = service.update(category, catId);
         log.info("Отправлен ответ для PATH запроса /admin/categories/{} с телом: {}", catId, categoryResponse);
         return categoryResponse;
     }
@@ -40,7 +40,7 @@ public class AdminCategoriesController {
             @PathVariable Long catId
     ) {
         log.info("Пришел DELETE запрос /admin/categories/{}", catId);
-        CategoryDto categoryResponse = service.delete(catId);
+        final CategoryDto categoryResponse = service.delete(catId);
         log.info("Отправлен ответ для DELETE запроса /admin/categories/{} с телом: {}", catId, categoryResponse);
         return categoryResponse;
     }

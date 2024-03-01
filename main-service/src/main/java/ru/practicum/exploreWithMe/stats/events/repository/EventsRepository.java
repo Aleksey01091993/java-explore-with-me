@@ -7,6 +7,7 @@ import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
 import org.springframework.stereotype.Repository;
 import ru.practicum.exploreWithMe.stats.events.model.Event;
 import ru.practicum.exploreWithMe.stats.events.model.QEvent;
+import ru.practicum.exploreWithMe.stats.statuses.Status;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,4 +21,6 @@ public interface EventsRepository extends JpaRepository<Event, Long>,
 
     Optional<Event> findFirstByIdAndInitiator_Id(Long id, Long userId);
     List<Event> findAllByIdIn(List<Long> eventId);
+
+    Optional<Event> findFirstByIdAndState(Long id, Status status);
 }

@@ -7,9 +7,9 @@ import ru.practicum.exploreWithMe.stats.categories.mapper.MapperCategories;
 import ru.practicum.exploreWithMe.stats.categories.model.Categories;
 import ru.practicum.exploreWithMe.stats.events.dto.*;
 import ru.practicum.exploreWithMe.stats.events.model.Event;
+import ru.practicum.exploreWithMe.stats.querydsl.EventFilterModel;
 import ru.practicum.exploreWithMe.stats.statuses.StateAction;
 import ru.practicum.exploreWithMe.stats.statuses.Status;
-import ru.practicum.exploreWithMe.stats.querydsl.EventFilterModel;
 import ru.practicum.exploreWithMe.stats.users.mapper.UserMapper;
 
 import java.time.LocalDateTime;
@@ -43,19 +43,24 @@ public class EventsMapper {
     }
     public static EventFilterModel toEventFilterAdmin(List<String> states, List<Long> usersId,
             List<Long> categories, String rangeStart, String rangeEnd, Integer from, Integer size) {
-        List<Status> statuses = states.stream()
-                .map(o1 -> {
-                    switch (o1) {
-                        case "PENDING":
-                            return Status.PENDING;
-                        case "PUBLISHED":
-                            return Status.PUBLISHED;
-                        case "CANCELED":
-                            return Status.CANCELED;
-                        default: return null;
-                    }
-                })
-                .collect(Collectors.toList());
+        List<Status> statuses = null;
+        if (states != null) {
+            statuses = states.stream()
+                    .map(o1 -> {
+                        switch (o1) {
+                            case "PENDING":
+                                return Status.PENDING;
+                            case "PUBLISHED":
+                                return Status.PUBLISHED;
+                            case "CANCELED":
+                                return Status.CANCELED;
+                            default:
+                                return null;
+                        }
+                    })
+                    .collect(Collectors.toList());
+        }
+
         return EventFilterModel.builder()
                 .statuses(statuses)
                 .categories(categories)
