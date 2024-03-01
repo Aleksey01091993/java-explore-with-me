@@ -15,12 +15,12 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping(path = "/admin/events")
+@RequestMapping( "/admin/events")
 public class AdminEventController {
     private final EventService service;
 
     @PatchMapping("/{eventId}")
-    public EventFullDto create(
+    public EventFullDto update(
             @RequestBody UpdateEventAdminRequest event,
             @PathVariable Long eventId
     ) {

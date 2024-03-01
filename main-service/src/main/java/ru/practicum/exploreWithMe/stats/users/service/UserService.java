@@ -2,7 +2,6 @@ package ru.practicum.exploreWithMe.stats.users.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.exploreWithMe.stats.exception.NotFoundException;
 import ru.practicum.exploreWithMe.stats.users.dto.NewUserRequest;
@@ -32,7 +31,7 @@ public class UserService {
     }
 
     public List<UserDto> getAll(List<Long> ids, Integer from, Integer size) {
-        return repository.findAllByIdIn(ids, PageRequest.of(from/size, from)).stream()
+        return repository.findAllByIdIn(ids, PageRequest.of(from/size, size)).stream()
                 .map(UserMapper::toResponse)
                 .collect(Collectors.toList());
     }

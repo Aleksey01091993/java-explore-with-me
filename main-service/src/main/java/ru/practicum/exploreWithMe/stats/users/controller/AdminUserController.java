@@ -3,6 +3,7 @@ package ru.practicum.exploreWithMe.stats.users.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.exploreWithMe.stats.users.dto.NewUserRequest;
@@ -19,6 +20,7 @@ public class AdminUserController {
     private final UserService service;
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public UserDto add(
             @RequestBody NewUserRequest user
     ) {
@@ -42,6 +44,7 @@ public class AdminUserController {
     }
 
     @DeleteMapping("/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public UserDto delete(
             @PathVariable Long userId
     ) {

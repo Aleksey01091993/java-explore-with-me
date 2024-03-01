@@ -55,7 +55,7 @@ public class CompilationService {
 
     }
 
-    public CompilationDto get (Long compilationId) {
+    public CompilationDto get (Long compilationId){
         Compilation compilation = repository.findById(compilationId)
                 .orElseThrow(() -> new NotFoundException("compilation not found by id: " + compilationId));
         return CompilationMapper.toCompilationDto(compilation);

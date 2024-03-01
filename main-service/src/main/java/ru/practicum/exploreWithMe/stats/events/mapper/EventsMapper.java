@@ -24,19 +24,21 @@ public class EventsMapper {
             String text, List<Long> categories, Boolean paid, String rangeStart, String rangeEnd,
             Boolean onlyAvailable, String sort, Integer from, Integer size) {
         Sort orderBy;
-        if (sort.equals("EVENT_DATE")) {
+        if (sort == null) {
+            orderBy = Sort.unsorted();
+        } else if (sort.equals("EVENT_DATE")) {
             orderBy = Sort.by("eventDate");
-        } else if (sort.equals("VIEWS"))
+        } else if (sort.equals("VIEWS")) {
             orderBy = Sort.by("views");
-        else {
+        } else {
             orderBy = Sort.unsorted();
         }
         return EventFilterModel.builder()
                 .text(text)
                 .categories(categories)
                 .paid(paid)
-                .rangeStart(LocalDateTime.parse(rangeStart, DTF))
-                .rangeEnd(LocalDateTime.parse(rangeEnd, DTF))
+                .rangeStart(rangeStart == null ? null : LocalDateTime.parse(rangeStart, DTF))
+                .rangeEnd(rangeEnd == null ? null : LocalDateTime.parse(rangeEnd, DTF))
                 .onlyAvailable(onlyAvailable)
                 .pageable(PageRequest.of(from / size, size, orderBy))
                 .build();

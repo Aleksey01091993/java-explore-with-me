@@ -2,10 +2,13 @@ package ru.practicum.exploreWithMe.stats.categories.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.exploreWithMe.stats.categories.dto.CategoryDto;
 import ru.practicum.exploreWithMe.stats.categories.dto.NewCategoryDto;
 import ru.practicum.exploreWithMe.stats.categories.service.CategoriesService;
+
+import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
@@ -14,9 +17,10 @@ import ru.practicum.exploreWithMe.stats.categories.service.CategoriesService;
 public class AdminCategoriesController {
     private final CategoriesService service;
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public CategoryDto add(
-            @RequestBody NewCategoryDto category
+            @RequestBody @Valid NewCategoryDto category
     ) {
         log.info("Пришел POST запрос /admin/categories с телом: {}", category);
         final CategoryDto categoryResponse = service.add(category);
@@ -35,6 +39,7 @@ public class AdminCategoriesController {
         return categoryResponse;
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{catId}")
     public CategoryDto delete(
             @PathVariable Long catId

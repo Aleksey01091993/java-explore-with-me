@@ -19,6 +19,9 @@ import ru.practicum.exploreWithMe.stats.statuses.Status;
 import ru.practicum.exploreWithMe.stats.users.model.User;
 import ru.practicum.exploreWithMe.stats.users.repository.UserRepository;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -51,7 +54,7 @@ public class EventService {
         return EventsMapper.toEventFullDto(repository.save(eventSave));
     }
 
-    public EventFullDto update(UpdateEventUserRequest event, Long userId, Long eventId) {
+    public EventFullDto update(UpdateEventUserRequest event, Long userId, Long eventId, HttpServletRequest request) {
         LocalDateTime find = LocalDateTime.now().plusHours(2L);
         LocalDateTime eventDate = LocalDateTime.parse(event.getEventDate(), DTF);
         if (eventDate.isBefore(find)) {

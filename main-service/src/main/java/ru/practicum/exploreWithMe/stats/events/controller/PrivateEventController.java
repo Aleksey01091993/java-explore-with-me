@@ -2,12 +2,16 @@ package ru.practicum.exploreWithMe.stats.events.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.exploreWithMe.stats.events.dto.EventFullDto;
 import ru.practicum.exploreWithMe.stats.events.dto.EventShortDto;
 import ru.practicum.exploreWithMe.stats.events.dto.NewEventDto;
 import ru.practicum.exploreWithMe.stats.events.dto.UpdateEventUserRequest;
 import ru.practicum.exploreWithMe.stats.events.service.EventService;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import java.util.List;
 
@@ -20,7 +24,7 @@ public class PrivateEventController {
 
     @PostMapping
     public EventFullDto create(
-            @RequestBody NewEventDto event,
+            @RequestBody @Valid NewEventDto event,
             @PathVariable Long userId
     ) {
         log.info("Пришел POST запрос users/{}/events с телом: {}", userId, event);
@@ -33,10 +37,11 @@ public class PrivateEventController {
     public EventFullDto update(
             @RequestBody UpdateEventUserRequest event,
             @PathVariable Long userId,
-            @PathVariable Long eventId
+            @PathVariable Long eventId,
+            HttpServletRequest request
     ) {
         log.info("Пришел PATCH запрос users/{}/events/{} с телом: {}", userId, eventId, event);
-        final EventFullDto response = service.update(event, userId, eventId);
+        final EventFullDto response = service.update(event, userId, eventId, request);
         log.info("Отправлен ответ для PATCH запроса users/{}/events/{} с телом: {}", userId, eventId, response);
         return response;
     }
