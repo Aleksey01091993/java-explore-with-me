@@ -2,6 +2,7 @@ package ru.practicum.exploreWithMe.stats.events.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.exploreWithMe.stats.events.dto.EventFullDto;
@@ -19,7 +20,7 @@ public class PublicEventController {
     private final EventService service;
 
     @GetMapping
-    public List<EventShortDto> getAll(
+    public ResponseEntity<Object> getAll(
             @RequestParam @Nullable String text,
             @RequestParam @Nullable List<Long> categories,
             @RequestParam @Nullable Boolean paid,
@@ -32,7 +33,7 @@ public class PublicEventController {
     ) {
         log.info("Пришел GET запрос /events?text={}&categories={}&paid={}&rangeStart={}&rangeEnd={}&onlyAvailable={}&sort={}&from={}&size={}",
                 text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
-        final List<EventShortDto> response = service
+        final ResponseEntity<Object> response = service
                 .getAll(EventsMapper.toEventFilter(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size));
         log.info("Отправлен ответ для GET запроса /events?text={}&categories={}&paid={}&rangeStart={}&rangeEnd={}&onlyAvailable={}&sort={}&from={}&size={} с телом: {}",
                 text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size, response);

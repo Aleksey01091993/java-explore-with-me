@@ -2,6 +2,7 @@ package ru.practicum.exploreWithMe.stats.events.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.exploreWithMe.stats.events.dto.EventFullDto;
@@ -23,6 +24,7 @@ public class PrivateEventController {
     private final EventService service;
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public EventFullDto create(
             @RequestBody @Valid NewEventDto event,
             @PathVariable Long userId
@@ -35,7 +37,7 @@ public class PrivateEventController {
 
     @PatchMapping("/{eventId}")
     public EventFullDto update(
-            @RequestBody UpdateEventUserRequest event,
+            @RequestBody @Valid UpdateEventUserRequest event,
             @PathVariable Long userId,
             @PathVariable Long eventId,
             HttpServletRequest request

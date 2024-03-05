@@ -28,7 +28,7 @@ public class RequestService {
     private final EventsRepository eventsRepository;
     private final RequestRepository repository;
 
-    public ParticipationRequestDto create(Long eventId, Long userId) {
+    public ParticipationRequestDto create(Long userId, Long eventId) {
         Request request = repository.findFirstByRequester_IdAndEvent_Id(userId, eventId).orElse(null);
         if (request != null) {
             throw new ConflictError("such a request already exists");

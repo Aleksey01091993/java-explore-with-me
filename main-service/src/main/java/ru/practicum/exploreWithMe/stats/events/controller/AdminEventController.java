@@ -31,7 +31,7 @@ public class AdminEventController {
     }
 
     @GetMapping
-    public List<EventShortDto> getAll(
+    public List<EventFullDto> getAll(
             @RequestParam @Nullable List<Long> users,
             @RequestParam @Nullable List<String> states,
             @RequestParam @Nullable List<Long> categories,
@@ -40,11 +40,11 @@ public class AdminEventController {
             @RequestParam(defaultValue = "0") Integer from,
             @RequestParam(defaultValue = "10") Integer size
     ) {
-        log.info("Пришел GET запрос /admin/events/?users={}&states={}&categories={}&rangeStart={}&rangeEnd={}&from={}&size={}",
+        log.info("Пришел GET запрос /admin/events?users={}&states={}&categories={}&rangeStart={}&rangeEnd={}&from={}&size={}",
                 users, states, categories, rangeStart, rangeEnd, from, size);
-        final List<EventShortDto> response = service
+        final List<EventFullDto> response = service
                 .getAllAdmin(EventsMapper.toEventFilterAdmin(states, users, categories, rangeStart, rangeEnd, from, size));
-        log.info("Отправлен ответ для GET запроса /admin/events/?users={}&states={}&categories={}&rangeStart={}&rangeEnd={}&from={}&size={} с телом: {}",
+        log.info("Отправлен ответ для GET запроса /admin/events?users={}&states={}&categories={}&rangeStart={}&rangeEnd={}&from={}&size={} с телом: {}",
                 users, states, categories, rangeStart, rangeEnd, from, size, response);
         return response;
     }

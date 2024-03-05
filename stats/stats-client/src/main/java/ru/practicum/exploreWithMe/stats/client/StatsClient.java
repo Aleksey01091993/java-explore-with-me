@@ -30,11 +30,9 @@ public class StatsClient {
     private final ObjectMapper json;
     private final HttpClient httpClient;
 
-    public StatsClient(@Value("${spring.application.name}") String application,
-                       @Value("${services.stats-service.uri") String statsServiceUri,
-                       ObjectMapper json) {
-        this.application = application;
-        this.statsServiceUri = statsServiceUri;
+    public StatsClient(ObjectMapper json) {
+        this.application = "ewm-main-service";
+        this.statsServiceUri = "http://localhost:9090";
         this.json = json;
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(2))

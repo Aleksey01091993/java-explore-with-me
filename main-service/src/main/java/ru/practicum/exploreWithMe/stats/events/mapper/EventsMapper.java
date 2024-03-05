@@ -10,11 +10,13 @@ import ru.practicum.exploreWithMe.stats.events.model.Event;
 import ru.practicum.exploreWithMe.stats.querydsl.EventFilterModel;
 import ru.practicum.exploreWithMe.stats.statuses.StateAction;
 import ru.practicum.exploreWithMe.stats.statuses.Status;
+import ru.practicum.exploreWithMe.stats.statuses.UserStateAction;
 import ru.practicum.exploreWithMe.stats.users.mapper.UserMapper;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class EventsMapper {
@@ -94,15 +96,15 @@ public class EventsMapper {
                 .id(event.getId())
                 .annotation(event.getAnnotation())
                 .category(MapperCategories.toCategoryDto(event.getCategory()))
-                .confirmedRequest(event.getConfirmedRequest())
-                .createdOn(event.getCreatedOn())
+                .confirmedRequests(event.getConfirmedRequest())
+                .createdOn(event.getCreatedOn() == null ? null : event.getCreatedOn().format(DTF))
                 .description(event.getDescription())
-                .eventDate(event.getEventDate())
+                .eventDate(event.getEventDate() == null ? null : event.getEventDate().format(DTF))
                 .initiator(UserMapper.toUserShortDto(event.getInitiator()))
                 .location(event.getLocation())
                 .paid(event.getPaid())
                 .participantLimit(event.getParticipantLimit())
-                .publishedOn(event.getPublishedOn())
+                .publishedOn(event.getPublishedOn() == null ? null : event.getPublishedOn().format(DTF))
                 .requestModeration(event.getRequestModeration())
                 .state(event.getState())
                 .title(event.getTitle())
@@ -111,33 +113,73 @@ public class EventsMapper {
     }
 
     public static Event toUpdate(Event event, UpdateEventUserRequest newEventDto, Categories category) {
-        event.setAnnotation(newEventDto.getAnnotation());
-        event.setCategory(category);
-        event.setDescription(newEventDto.getDescription());
-        event.setEventDate(LocalDateTime.parse(newEventDto.getEventDate(), DTF));
-        event.setLocation(newEventDto.getLocation());
-        event.setPaid(newEventDto.getPaid());
-        event.setParticipantLimit(newEventDto.getParticipantLimit());
-        event.setRequestModeration(newEventDto.getRequestModeration());
-        event.setTitle(newEventDto.getTitle());
+        if (newEventDto.getAnnotation() != null) {
+            event.setAnnotation(newEventDto.getAnnotation());
+        }
+        if (newEventDto.getDescription() != null) {
+            event.setDescription(newEventDto.getDescription());
+        }
+        if (newEventDto.getEventDate() != null) {
+            event.setEventDate(LocalDateTime.parse(newEventDto.getEventDate(), DTF));
+        }
+        if (newEventDto.getLocation() != null) {
+            event.setLocation(newEventDto.getLocation());
+        }
+        if (newEventDto.getPaid() != null) {
+            event.setPaid(newEventDto.getPaid());
+        }
+        if (category != null) {
+            event.setCategory(category);
+        }
+        if (newEventDto.getParticipantLimit() != null) {
+            event.setParticipantLimit(newEventDto.getParticipantLimit());
+        }
+        if (newEventDto.getRequestModeration() != null) {
+            event.setRequestModeration(newEventDto.getRequestModeration());
+        }
+        if (newEventDto.getTitle() != null) {
+            event.setTitle(newEventDto.getTitle());
+        }
+        if (newEventDto.getStateAction() == UserStateAction.SEND_TO_REVIEW) {
+            event.setState(Status.PENDING);
+        }  else if (newEventDto.getStateAction() == UserStateAction.CANCEL_REVIEW) {
+            event.setState(Status.CANCELED);
+        }
         return event;
     }
     public static Event toUpdate(Event event, UpdateEventAdminRequest newEventDto, Categories category) {
-        event.setAnnotation(newEventDto.getAnnotation());
-        event.setCategory(category);
-        event.setDescription(newEventDto.getDescription());
-        event.setEventDate(LocalDateTime.parse(newEventDto.getEventDate(), DTF));
-        event.setLocation(newEventDto.getLocation());
-        event.setPaid(newEventDto.getPaid());
-        event.setParticipantLimit(newEventDto.getParticipantLimit());
-        event.setRequestModeration(newEventDto.getRequestModeration());
-        event.setTitle(newEventDto.getTitle());
+        if (newEventDto.getAnnotation() != null) {
+            event.setAnnotation(newEventDto.getAnnotation());
+        }
+        if (newEventDto.getDescription() != null) {
+            event.setDescription(newEventDto.getDescription());
+        }
+        if (newEventDto.getEventDate() != null) {
+            event.setEventDate(LocalDateTime.parse(newEventDto.getEventDate(), DTF));
+        }
+        if (newEventDto.getLocation() != null) {
+            event.setLocation(newEventDto.getLocation());
+        }
+        if (newEventDto.getPaid() != null) {
+            event.setPaid(newEventDto.getPaid());
+        }
+        if (category != null) {
+            event.setCategory(category);
+        }
+        if (newEventDto.getParticipantLimit() != null) {
+            event.setParticipantLimit(newEventDto.getParticipantLimit());
+        }
+        if (newEventDto.getRequestModeration() != null) {
+            event.setRequestModeration(newEventDto.getRequestModeration());
+        }
+        if (newEventDto.getTitle() != null) {
+            event.setTitle(newEventDto.getTitle());
+        }
         if (newEventDto.getStateAction() == StateAction.PUBLISH_EVENT) {
             event.setState(Status.PUBLISHED);
+            event.setPublishedOn(LocalDateTime.now());
         } else if (newEventDto.getStateAction() == StateAction.REJECT_EVENT) {
             event.setState(Status.REJECTED);
-        } else if (newEventDto.getStateAction() == StateAction.CANCEL_REVIEW) {
-            event.setState(Status.CANCELED);
         }
         return event;
     }
@@ -148,7 +190,7 @@ public class EventsMapper {
                 .annotation(events.getAnnotation())
                 .category(MapperCategories.toCategoryDto(events.getCategory()))
                 .confirmedRequests(events.getConfirmedRequest())
-                .eventDate(events.getEventDate())
+                .eventDate(events.getEventDate() == null ? null : events.getEventDate().format(DTF))
                 .initiator(UserMapper.toUserShortDto(events.getInitiator()))
                 .paid(events.getPaid())
                 .title(events.getTitle())

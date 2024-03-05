@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import ru.practicum.exploreWithMe.stats.events.model.Event;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 @Data
@@ -15,7 +16,7 @@ import java.util.List;
 @Table(name = "compilation")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Compilation {
+public class Compilation implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -2,7 +2,10 @@ package ru.practicum.exploreWithMe.stats.events.service;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.practicum.exploreWithMe.stats.categories.model.Categories;
 import ru.practicum.exploreWithMe.stats.categories.repository.CategoriesRepository;
@@ -20,8 +23,6 @@ import ru.practicum.exploreWithMe.stats.users.model.User;
 import ru.practicum.exploreWithMe.stats.users.repository.UserRepository;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -35,6 +36,7 @@ public class EventService {
     private final EventsRepository repository;
     private final UserRepository userRepository;
     private final CategoriesRepository categoriesRepository;
+
 
     private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -51,25 +53,35 @@ public class EventService {
         Event eventSave = EventsMapper.toCreate(event);
         eventSave.setInitiator(user);
         eventSave.setCategory(categories);
-        return EventsMapper.toEventFullDto(repository.save(eventSave));
+        Event response = repository.save(eventSave);
+        return EventsMapper.toEventFullDto(response);
     }
 
     public EventFullDto update(UpdateEventUserRequest event, Long userId, Long eventId, HttpServletRequest request) {
-        LocalDateTime find = LocalDateTime.now().plusHours(2L);
-        LocalDateTime eventDate = LocalDateTime.parse(event.getEventDate(), DTF);
-        if (eventDate.isBefore(find)) {
-            throw new ConflictError("the date and time at which the event is scheduled cannot be earlier than two hours from the current moment");
-        }
         Event eventToUpdate = repository.findFirstByIdAndInitiator_Id(eventId, userId)
                 .orElseThrow(() -> new NotFoundException("event or user not found by id: " + eventId + "," + userId));
-        if (eventToUpdate.getState() != Status.PENDING || eventToUpdate.getState() != Status.REJECTED) {
-            throw new ConflictError("you can only change canceled events or events in the waiting state for moderation");
+        if (!(eventToUpdate.getState() == Status.REJECTED || eventToUpdate.getState() == Status.PENDING)) {
+            throw new ConflictError("you can only change canceled events or events in the waiting state of moderation");
         }
-        Categories category = categoriesRepository.findById(event.getCategory())
-                .orElseThrow(() -> new NotFoundException("Category not found by id: " + event.getCategory()));
-
-        Event eventSave = EventsMapper.toUpdate(eventToUpdate, event, category);
-        return EventsMapper.toEventFullDto(repository.save(eventSave));
+        LocalDateTime find = LocalDateTime.now().plusHours(2L);
+        if (event.getEventDate() == null) {
+            if (eventToUpdate.getEventDate().isBefore(find)) {
+                throw new ConflictError("the date and time at which the event is scheduled cannot be earlier than two hours from the current moment");
+            }
+        } else {
+            LocalDateTime newEventDate = LocalDateTime.parse(event.getEventDate(), DTF);
+            if (newEventDate.isBefore(find)) {
+                throw new ConflictError("the date and time at which the event is scheduled cannot be earlier than two hours from the current moment");
+            }
+        }
+        Categories category;
+        if (event.getCategory() != null) {
+            category = categoriesRepository.findById(event.getCategory())
+                    .orElseThrow(() -> new NotFoundException("Category not found by id: " + event.getCategory()));
+        } else {
+            category = null;
+        }
+        return EventsMapper.toEventFullDto(repository.save(EventsMapper.toUpdate(eventToUpdate, event, category)));
     }
 
     public List<EventShortDto> getAllUserId(Long userId, Integer from, Integer size) {
@@ -85,7 +97,7 @@ public class EventService {
         );
     }
 
-    public List<EventShortDto> getAll(EventFilterModel filter) {
+    public ResponseEntity<Object> getAll(EventFilterModel filter) {
         EventPredicatesBuilder builder = new EventPredicatesBuilder();
         if (filter.getRangeEnd() == null && filter.getRangeStart() == null) {
             builder.with("eventStart", LocalDateTime.now());
@@ -106,20 +118,24 @@ public class EventService {
         Optional.ofNullable(filter.getOnlyAvailable())
                 .ifPresent(o1 -> builder.with("available", filter.getOnlyAvailable()));
         BooleanExpression expression = builder.build();
-        return repository.findAll(expression, filter.getPageable())
+        List<EventShortDto> response = repository.findAll(expression, filter.getPageable())
                 .stream()
                 .map(EventsMapper::toGetAll)
                 .collect(Collectors.toList());
+        if (response.isEmpty()) {
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        } else {
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
     }
 
     public EventFullDto get(Long eventId) {
-        return EventsMapper.toEventFullDto(
-                repository.findFirstByIdAndState(eventId, Status.PUBLISHED)
-                        .orElseThrow(() -> new NotFoundException("event not found by id: " + eventId))
-        );
+        Event event = repository.findFirstByIdAndState(eventId, Status.PUBLISHED)
+                .orElseThrow(() -> new NotFoundException("event not found by id: " + eventId));
+        return EventsMapper.toEventFullDto(event);
     }
 
-    public List<EventShortDto> getAllAdmin(EventFilterModel filter) {
+    public List<EventFullDto> getAllAdmin(EventFilterModel filter) {
         EventPredicatesBuilder builder = new EventPredicatesBuilder();
         Optional.ofNullable(filter.getUsersId())
                 .ifPresent(o1 -> builder.with("users", filter.getUsersId()));
@@ -134,25 +150,37 @@ public class EventService {
         BooleanExpression expression = builder.build();
         return repository.findAll(expression, filter.getPageable())
                 .stream()
-                .map(EventsMapper::toGetAll)
+                .map(EventsMapper::toEventFullDto)
                 .collect(Collectors.toList());
     }
 
     public EventFullDto updateAdmin(UpdateEventAdminRequest event, Long eventId) {
-        LocalDateTime find = LocalDateTime.now().plusHours(1L);
-        LocalDateTime eventDate = LocalDateTime.parse(event.getEventDate(), DTF);
-        if (eventDate.isBefore(find)) {
-            throw new ConflictError("the date and time at which the event is scheduled cannot be earlier than two hours from the current moment");
+        Categories category;
+        if (event.getCategory() != null) {
+            category = categoriesRepository.findById(event.getCategory())
+                    .orElseThrow(() -> new NotFoundException("Category not found by id: " + event.getCategory()));
+        } else {
+            category = null;
         }
-        Categories category = categoriesRepository.findById(event.getCategory())
-                .orElseThrow(() -> new NotFoundException("Category not found by id: " + event.getCategory()));
         Event eventToUpdate = repository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("event not found by id: " + eventId));
-        if (event.getStateAction() == StateAction.PUBLISH_EVENT && eventToUpdate.getState() != Status.PENDING) {
-            throw new ConflictError("An event can be published only if it is in the waiting state for publication");
+        LocalDateTime find = LocalDateTime.now().plusHours(1L);
+        if (event.getEventDate() == null) {
+            if (eventToUpdate.getEventDate().isBefore(find)) {
+                throw new ConflictError("the date and time at which the event is scheduled cannot be earlier than two hours from the current moment");
+            }
+        } else {
+            LocalDateTime newEventDate = LocalDateTime.parse(event.getEventDate(), DTF);
+            if (newEventDate.isBefore(find)) {
+                throw new ConflictError("the date and time at which the event is scheduled cannot be earlier than two hours from the current moment");
+
+            }
         }
-        if (event.getStateAction() == StateAction.REJECT_EVENT && eventToUpdate.getState() == Status.PENDING) {
-            throw new ConflictError("An event can be rejected only if it has not been published yet");
+        if ((event.getStateAction() != null) &&
+                ((event.getStateAction() == StateAction.PUBLISH_EVENT || event.getStateAction() == StateAction.REJECT_EVENT) &&
+                        eventToUpdate.getState() != Status.PENDING)) {
+            throw new ConflictError("An event can be published only if it is in the waiting state for publication or" +
+                    " An event can be rejected only if it has not been published yet");
         }
         Event eventSave = EventsMapper.toUpdate(eventToUpdate, event, category);
         return EventsMapper.toEventFullDto(repository.save(eventSave));

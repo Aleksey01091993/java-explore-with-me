@@ -11,6 +11,7 @@ import ru.practicum.exploreWithMe.stats.users.model.User;
 
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
@@ -19,15 +20,17 @@ import java.time.LocalDateTime;
 @Table(name = "events")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Event {
+public class Event implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(length = 2000)
     private String annotation;
     @ManyToOne
     private Categories category;
     private Integer confirmedRequest;
     private LocalDateTime createdOn;
+    @Column(length = 2000)
     private String description;
     private LocalDateTime eventDate;
     @ManyToOne
