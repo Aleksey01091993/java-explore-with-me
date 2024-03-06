@@ -10,6 +10,7 @@ import ru.practicum.exploreWithMe.stats.events.dto.UpdateEventAdminRequest;
 import ru.practicum.exploreWithMe.stats.events.mapper.EventsMapper;
 import ru.practicum.exploreWithMe.stats.events.service.EventService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -21,7 +22,7 @@ public class AdminEventController {
 
     @PatchMapping("/{eventId}")
     public EventFullDto update(
-            @RequestBody UpdateEventAdminRequest event,
+            @RequestBody @Valid UpdateEventAdminRequest event,
             @PathVariable Long eventId
     ) {
         log.info("Пришел PATCH запрос /admin/events/{} с телом: {}", eventId, event);

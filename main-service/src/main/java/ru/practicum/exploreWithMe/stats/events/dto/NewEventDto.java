@@ -4,27 +4,23 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 import ru.practicum.exploreWithMe.stats.events.model.Location;
 
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
+import javax.validation.constraints.*;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class NewEventDto {
-    @NotNull
     @NotBlank
-    @NotEmpty
+    @Length(min = 20, max = 2000)
     private String annotation;
     private Long category;
-    @NotNull
     @NotBlank
-    @NotEmpty
+    @Length(min = 20, max = 7000)
     private String description;
     private String eventDate;
     private Location location;
@@ -32,5 +28,7 @@ public class NewEventDto {
     @PositiveOrZero
     private Integer participantLimit;
     private Boolean requestModeration;
+    @NotBlank
+    @Length(min = 3, max = 120)
     private String title;
 }

@@ -2,6 +2,7 @@ package ru.practicum.exploreWithMe.stats.repository;
 
 
 import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.StringPath;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -27,12 +28,5 @@ public interface StatsRepository extends JpaRepository<Stats, Long>,
     default void customize(final QuerydslBindings bindings, final QStats root) {
 
     }
-    List<Stats> findByTimesTampBetweenAndUriIn(LocalDateTime start, LocalDateTime end, List<String> url);
-
-    List<Stats> findDistinctByUriInAndTimesTampBetween(List<String> uri, LocalDateTime start, LocalDateTime end);
-
-    List<Stats> findByTimesTampBetween(LocalDateTime start, LocalDateTime end);
-
-    List<Stats> findDistinctByTimesTampBetween(LocalDateTime start, LocalDateTime end);
 
 }

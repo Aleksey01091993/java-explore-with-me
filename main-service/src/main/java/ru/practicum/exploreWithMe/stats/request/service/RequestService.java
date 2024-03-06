@@ -40,7 +40,8 @@ public class RequestService {
         if (event.getInitiator().getId().equals(userId)) {
             throw new ConflictError("the initiator of the event cannot add a request to participate in his event");
         }
-        if (Objects.equals(event.getConfirmedRequest(), event.getParticipantLimit())) {
+        if ((Objects.equals(event.getConfirmedRequest(), event.getParticipantLimit()) &&
+                event.getParticipantLimit() != 0)) {
             throw new ConflictError("The limit of participation requests has been reached");
         }
         Request requestCreate = RequestMapper.toCreate(user, event);

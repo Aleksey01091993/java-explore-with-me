@@ -1,6 +1,7 @@
 package ru.practicum.exploreWithMe.stats.events.service;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -9,10 +10,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.practicum.exploreWithMe.stats.categories.model.Categories;
 import ru.practicum.exploreWithMe.stats.categories.repository.CategoriesRepository;
+import ru.practicum.exploreWithMe.stats.client.StatsClient;
+import ru.practicum.exploreWithMe.stats.dto.ResponseGetStatsDto;
+import ru.practicum.exploreWithMe.stats.dto.ResponseStatsDto;
 import ru.practicum.exploreWithMe.stats.events.dto.*;
 import ru.practicum.exploreWithMe.stats.events.mapper.EventsMapper;
 import ru.practicum.exploreWithMe.stats.events.model.Event;
 import ru.practicum.exploreWithMe.stats.events.repository.EventsRepository;
+import ru.practicum.exploreWithMe.stats.exception.BadRequestException;
 import ru.practicum.exploreWithMe.stats.exception.ConflictError;
 import ru.practicum.exploreWithMe.stats.exception.NotFoundException;
 import ru.practicum.exploreWithMe.stats.querydsl.EventFilterModel;
@@ -36,6 +41,7 @@ public class EventService {
     private final EventsRepository repository;
     private final UserRepository userRepository;
     private final CategoriesRepository categoriesRepository;
+    private final StatsClient client;
 
 
     private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -44,7 +50,7 @@ public class EventService {
         LocalDateTime find = LocalDateTime.now().plusHours(2L);
         LocalDateTime eventDate = LocalDateTime.parse(event.getEventDate(), DTF);
         if (eventDate.isBefore(find)) {
-            throw new ConflictError("the date and time at which the event is scheduled cannot be earlier than two hours from the current moment");
+            throw new BadRequestException("the date and time at which the event is scheduled cannot be earlier than two hours from the current moment");
         }
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("user not found by id: " + id));
@@ -54,7 +60,7 @@ public class EventService {
         eventSave.setInitiator(user);
         eventSave.setCategory(categories);
         Event response = repository.save(eventSave);
-        return EventsMapper.toEventFullDto(response);
+        return EventsMapper.toEventCreate(response);
     }
 
     public EventFullDto update(UpdateEventUserRequest event, Long userId, Long eventId, HttpServletRequest request) {
@@ -66,12 +72,12 @@ public class EventService {
         LocalDateTime find = LocalDateTime.now().plusHours(2L);
         if (event.getEventDate() == null) {
             if (eventToUpdate.getEventDate().isBefore(find)) {
-                throw new ConflictError("the date and time at which the event is scheduled cannot be earlier than two hours from the current moment");
+                throw new BadRequestException("the date and time at which the event is scheduled cannot be earlier than two hours from the current moment");
             }
         } else {
             LocalDateTime newEventDate = LocalDateTime.parse(event.getEventDate(), DTF);
             if (newEventDate.isBefore(find)) {
-                throw new ConflictError("the date and time at which the event is scheduled cannot be earlier than two hours from the current moment");
+                throw new BadRequestException("the date and time at which the event is scheduled cannot be earlier than two hours from the current moment");
             }
         }
         Categories category;
@@ -129,9 +135,11 @@ public class EventService {
         }
     }
 
-    public EventFullDto get(Long eventId) {
+    public EventFullDto get(Long eventId, HttpServletRequest request) {
         Event event = repository.findFirstByIdAndState(eventId, Status.PUBLISHED)
                 .orElseThrow(() -> new NotFoundException("event not found by id: " + eventId));
+        List<ResponseGetStatsDto> stats = client.getStats(request, "/" + eventId);
+        Optional.ofNullable(stats).ifPresent(o1 -> event.setViews(o1.get(0).getHits()));
         return EventsMapper.toEventFullDto(event);
     }
 
@@ -148,10 +156,18 @@ public class EventService {
         Optional.ofNullable(filter.getRangeEnd())
                 .ifPresent(o1 -> builder.with("eventEnd", filter.getRangeEnd()));
         BooleanExpression expression = builder.build();
-        return repository.findAll(expression, filter.getPageable())
-                .stream()
-                .map(EventsMapper::toEventFullDto)
-                .collect(Collectors.toList());
+        if (expression == null) {
+            return repository.findAll(filter.getPageable())
+                    .stream()
+                    .map(EventsMapper::toEventFullDto)
+                    .collect(Collectors.toList());
+        } else {
+            return repository.findAll(expression, filter.getPageable())
+                    .stream()
+                    .map(EventsMapper::toEventFullDto)
+                    .collect(Collectors.toList());
+        }
+
     }
 
     public EventFullDto updateAdmin(UpdateEventAdminRequest event, Long eventId) {
@@ -167,12 +183,12 @@ public class EventService {
         LocalDateTime find = LocalDateTime.now().plusHours(1L);
         if (event.getEventDate() == null) {
             if (eventToUpdate.getEventDate().isBefore(find)) {
-                throw new ConflictError("the date and time at which the event is scheduled cannot be earlier than two hours from the current moment");
+                throw new BadRequestException("the date and time at which the event is scheduled cannot be earlier than two hours from the current moment");
             }
         } else {
             LocalDateTime newEventDate = LocalDateTime.parse(event.getEventDate(), DTF);
             if (newEventDate.isBefore(find)) {
-                throw new ConflictError("the date and time at which the event is scheduled cannot be earlier than two hours from the current moment");
+                throw new BadRequestException("the date and time at which the event is scheduled cannot be earlier than two hours from the current moment");
 
             }
         }

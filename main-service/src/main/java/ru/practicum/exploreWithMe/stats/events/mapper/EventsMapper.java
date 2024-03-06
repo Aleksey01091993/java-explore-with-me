@@ -69,8 +69,8 @@ public class EventsMapper {
                 .statuses(statuses)
                 .categories(categories)
                 .usersId(usersId)
-                .rangeStart(LocalDateTime.parse(rangeStart, DTF))
-                .rangeEnd(LocalDateTime.parse(rangeEnd, DTF))
+                .rangeStart(rangeStart == null ? null : LocalDateTime.parse(rangeStart, DTF))
+                .rangeEnd(rangeEnd == null ? null : LocalDateTime.parse(rangeEnd, DTF))
                 .pageable(PageRequest.of(from / size, size))
                 .build();
     }
@@ -106,6 +106,27 @@ public class EventsMapper {
                 .participantLimit(event.getParticipantLimit())
                 .publishedOn(event.getPublishedOn() == null ? null : event.getPublishedOn().format(DTF))
                 .requestModeration(event.getRequestModeration())
+                .state(event.getState())
+                .title(event.getTitle())
+                .views(event.getViews())
+                .build();
+    }
+
+    public static EventFullDto toEventCreate(Event event) {
+        return EventFullDto.builder()
+                .id(event.getId())
+                .annotation(event.getAnnotation())
+                .category(MapperCategories.toCategoryDto(event.getCategory()))
+                .confirmedRequests(event.getConfirmedRequest())
+                .createdOn(event.getCreatedOn() == null ? null : event.getCreatedOn().format(DTF))
+                .description(event.getDescription())
+                .eventDate(event.getEventDate() == null ? null : event.getEventDate().format(DTF))
+                .initiator(UserMapper.toUserShortDto(event.getInitiator()))
+                .location(event.getLocation())
+                .paid(event.getPaid() != null && event.getPaid())
+                .participantLimit(event.getParticipantLimit() == null ? 0 : event.getParticipantLimit())
+                .publishedOn(event.getPublishedOn() == null ? null : event.getPublishedOn().format(DTF))
+                .requestModeration(event.getRequestModeration() == null || event.getRequestModeration())
                 .state(event.getState())
                 .title(event.getTitle())
                 .views(event.getViews())

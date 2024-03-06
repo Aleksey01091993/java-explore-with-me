@@ -30,7 +30,7 @@ public class Event implements Serializable {
     private Categories category;
     private Integer confirmedRequest;
     private LocalDateTime createdOn;
-    @Column(length = 2000)
+    @Column(length = 7000)
     private String description;
     private LocalDateTime eventDate;
     @ManyToOne
@@ -43,6 +43,7 @@ public class Event implements Serializable {
     private Boolean requestModeration;
     @Enumerated(EnumType.STRING)
     private Status state;
+    @Column(length = 120)
     private String title;
     private Integer views;
 

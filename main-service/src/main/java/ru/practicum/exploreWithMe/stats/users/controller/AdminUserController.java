@@ -10,6 +10,7 @@ import ru.practicum.exploreWithMe.stats.users.dto.NewUserRequest;
 import ru.practicum.exploreWithMe.stats.users.dto.UserDto;
 import ru.practicum.exploreWithMe.stats.users.service.UserService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -22,7 +23,7 @@ public class AdminUserController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserDto add(
-            @RequestBody NewUserRequest user
+            @RequestBody @Valid NewUserRequest user
     ) {
         log.info("Пришел POST запрос admin/users с телом: {}", user);
         final UserDto userResponse = service.add(user);

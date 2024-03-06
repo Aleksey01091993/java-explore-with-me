@@ -35,8 +35,8 @@ public class StatsController {
     @GetMapping("/stats")
     public List<ResponseGetStatsDto> get
             (
-                    @RequestParam String start,
-                    @RequestParam String end,
+                    @RequestParam @Nullable String start,
+                    @RequestParam @Nullable String end,
                     @RequestParam @Nullable List<String> uris,
                     @RequestParam @Nullable Boolean unique
             ) {

@@ -31,8 +31,15 @@ public class UserService {
     }
 
     public List<UserDto> getAll(List<Long> ids, Integer from, Integer size) {
-        return repository.findAllByIdIn(ids, PageRequest.of(from/size, size)).stream()
-                .map(UserMapper::toResponse)
-                .collect(Collectors.toList());
+        if (ids == null) {
+            return repository.findAll(PageRequest.of(from/size, size)).stream()
+                    .map(UserMapper::toResponse)
+                    .collect(Collectors.toList());
+        } else {
+            return repository.findAllByIdIn(ids, PageRequest.of(from/size, size)).stream()
+                    .map(UserMapper::toResponse)
+                    .collect(Collectors.toList());
+        }
+
     }
 }

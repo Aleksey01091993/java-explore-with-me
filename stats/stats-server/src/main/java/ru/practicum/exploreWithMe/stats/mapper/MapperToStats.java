@@ -1,18 +1,18 @@
 package ru.practicum.exploreWithMe.stats.mapper;
 
 
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
 import ru.practicum.exploreWithMe.stats.dto.RequestStatsDto;
 import ru.practicum.exploreWithMe.stats.dto.ResponseGetStatsDto;
 import ru.practicum.exploreWithMe.stats.dto.ResponseStatsDto;
-import ru.practicum.exploreWithMe.stats.model.QStats;
 import ru.practicum.exploreWithMe.stats.model.Stats;
 import ru.practicum.exploreWithMe.stats.model.StatsUnique;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class MapperToStats {
