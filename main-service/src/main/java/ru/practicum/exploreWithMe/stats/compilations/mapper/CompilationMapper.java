@@ -27,7 +27,7 @@ public class CompilationMapper {
                                 .map(EventsMapper::toGetAll)
                                 .collect(Collectors.toList())
                 )
-                .pinned(compilation.getPinned())
+                .pinned(compilation.getPinned() != null && compilation.getPinned())
                 .title(compilation.getTitle())
                 .build();
     }

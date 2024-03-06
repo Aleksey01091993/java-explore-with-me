@@ -31,7 +31,7 @@ public class AdminCategoriesController {
     @PatchMapping("/{catId}")
     public CategoryDto update(
             @PathVariable Long catId,
-            @RequestBody NewCategoryDto category
+            @RequestBody @Valid NewCategoryDto category
     ) {
         log.info("Пришел PATH запрос /admin/categories/{} с телом: {}", catId, category);
         final CategoryDto categoryResponse = service.update(category, catId);
