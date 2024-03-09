@@ -3,13 +3,13 @@ package ru.practicum.exploreWithMe.stats.users.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import ru.practicum.exploreWithMe.stats.exception.ConflictError;
 import ru.practicum.exploreWithMe.stats.exception.NotFoundException;
 import ru.practicum.exploreWithMe.stats.users.dto.NewUserRequest;
 import ru.practicum.exploreWithMe.stats.users.dto.UserDto;
 import ru.practicum.exploreWithMe.stats.users.mapper.UserMapper;
 import ru.practicum.exploreWithMe.stats.users.model.User;
 import ru.practicum.exploreWithMe.stats.users.repository.UserRepository;
-
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,6 +20,11 @@ public class UserService {
     private final UserRepository repository;
 
     public UserDto add(NewUserRequest request) {
+        if (request.getName() != null) {
+            if (repository.findFirstByEmail(request.getEmail()).isPresent()) {
+                throw new ConflictError("Adding a user with a busy mail name");
+            }
+        }
         return UserMapper.toResponse(repository.save(UserMapper.toUser(request)));
     }
 

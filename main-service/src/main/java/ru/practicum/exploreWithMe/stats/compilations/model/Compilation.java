@@ -20,7 +20,7 @@ public class Compilation implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToMany
+    @ManyToMany
     private List<Event> events;
     private Boolean pinned;
     private String title;

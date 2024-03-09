@@ -13,6 +13,7 @@ import ru.practicum.exploreWithMe.stats.events.model.Event;
 import ru.practicum.exploreWithMe.stats.events.repository.EventsRepository;
 import ru.practicum.exploreWithMe.stats.exception.NotFoundException;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,23 +24,36 @@ public class CompilationService {
     private final EventsRepository eventsRepository;
 
     public CompilationDto create(NewCompilationDto compilation) {
-        List<Event> events = eventsRepository.findAllByIdIn(compilation.getEvents());
+        List<Event> events;
+        if (compilation.getEvents() == null) {
+            events = null;
+        } else if (compilation.getEvents().isEmpty()) {
+            events = Collections.emptyList();
+        } else {
+            events = eventsRepository.findAllByIdIn(compilation.getEvents());
+        }
         return CompilationMapper.toCompilationDto(repository.save(CompilationMapper.toCompilation(compilation, events)));
     }
 
     public CompilationDto update(UpdateCompilationRequest compilationNew, Long compilationId) {
         Compilation compilation = repository.findById(compilationId)
                 .orElseThrow(() -> new NotFoundException("compilation not found by id: " + compilationId));
-        List<Event> events = eventsRepository.findAllByIdIn(compilationNew.getEvents());
+        List<Event> events;
+        if (compilationNew.getEvents() == null) {
+            events = null;
+        } else if (compilationNew.getEvents().isEmpty()) {
+            events = Collections.emptyList();
+        } else {
+            events = eventsRepository.findAllByIdIn(compilationNew.getEvents());
+        }
         return CompilationMapper.toCompilationDto(repository.save(CompilationMapper
                 .toUpdate(compilation, compilationNew, events)));
     }
 
-    public CompilationDto delete(Long compilationId) {
+    public void delete(Long compilationId) {
         Compilation compilation = repository.findById(compilationId)
                 .orElseThrow(() -> new NotFoundException("compilation not found by id: " + compilationId));
         repository.delete(compilation);
-        return CompilationMapper.toCompilationDto(compilation);
     }
 
     public List<CompilationDto> getAll(Boolean pinned, Integer from, Integer size) {

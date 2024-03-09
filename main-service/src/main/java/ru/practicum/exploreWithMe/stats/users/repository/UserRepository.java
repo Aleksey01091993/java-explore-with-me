@@ -11,6 +11,7 @@ import ru.practicum.exploreWithMe.stats.users.model.QUser;
 import ru.practicum.exploreWithMe.stats.users.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
@@ -25,4 +26,6 @@ public interface UserRepository extends JpaRepository<User, Long>,
 
 
     List<User> findAllByIdIn(List<Long> ids, Pageable pageable);
+
+    Optional<User> findFirstByEmail(String email);
 }

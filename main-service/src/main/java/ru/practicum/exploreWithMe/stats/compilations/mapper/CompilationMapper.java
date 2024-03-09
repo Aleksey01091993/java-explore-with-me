@@ -7,6 +7,7 @@ import ru.practicum.exploreWithMe.stats.compilations.model.Compilation;
 import ru.practicum.exploreWithMe.stats.events.mapper.EventsMapper;
 import ru.practicum.exploreWithMe.stats.events.model.Event;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,7 +23,7 @@ public class CompilationMapper {
     public static CompilationDto toCompilationDto(Compilation compilation) {
         return CompilationDto.builder()
                 .id(compilation.getId())
-                .events(
+                .events(compilation.getEvents() == null ? Collections.emptyList() :
                         compilation.getEvents().stream()
                                 .map(EventsMapper::toGetAll)
                                 .collect(Collectors.toList())

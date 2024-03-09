@@ -1,5 +1,18 @@
 version: '3.8'
 services:
+  main-service:
+    build: /main-service
+    image: service_image
+    container_name: service_container
+    ports:
+      - "8080:8080"
+    depends_on:
+      - stats-server
+      - db
+    environment:
+      - BD=jdbc:postgresql://db:5432/postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=pass
   stats-server:
     build: /stats/stats-server
     image: service_image

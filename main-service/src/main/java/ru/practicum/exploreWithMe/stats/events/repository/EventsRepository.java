@@ -7,6 +7,7 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
 import org.springframework.data.querydsl.binding.QuerydslBindings;
 import org.springframework.stereotype.Repository;
+import ru.practicum.exploreWithMe.stats.categories.model.Categories;
 import ru.practicum.exploreWithMe.stats.events.model.Event;
 import ru.practicum.exploreWithMe.stats.events.model.QEvent;
 import ru.practicum.exploreWithMe.stats.statuses.Status;
@@ -29,4 +30,6 @@ public interface EventsRepository extends JpaRepository<Event, Long>,
     List<Event> findAllByIdIn(List<Long> eventId);
 
     Optional<Event> findFirstByIdAndState(Long id, Status status);
+
+    List<Event> findByCategory(Categories categories);
 }

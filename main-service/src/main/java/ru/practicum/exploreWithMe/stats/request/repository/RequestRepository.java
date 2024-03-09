@@ -19,7 +19,11 @@ public interface RequestRepository extends JpaRepository<Request, Long>,
     default void customize(final QuerydslBindings bindings, final QRequest root) {
     }
     Optional<Request> findFirstByRequester_IdAndEvent_Id(Long userId, Long eventId);
+
+    Optional<Request> findFirstByIdAndRequester_Id(Long id, Long requesterId);
     List<Request> findAllByRequester_Id(Long userId);
-    List<Request> findAllByRequester_IdAndEvent_Id(Long userId, Long eventId);
     List<Request> findAllByIdIn(List<Long> ids);
+
+    List<Request> findAllByEvent_Id(Long eventId);
+
 }

@@ -46,5 +46,12 @@ public class ErrorHandler {
         return new ErrorResponse(e.getMessage());
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ErrorResponse conflict(final NoContent e) {
+        log.info(e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
+
 }
 

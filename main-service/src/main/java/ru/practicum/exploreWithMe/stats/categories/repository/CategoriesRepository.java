@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 import ru.practicum.exploreWithMe.stats.categories.model.Categories;
 import ru.practicum.exploreWithMe.stats.categories.model.QCategories;
 
+import java.util.Optional;
+
 
 @Repository
 public interface CategoriesRepository extends JpaRepository<Categories, Long>,
@@ -20,4 +22,5 @@ public interface CategoriesRepository extends JpaRepository<Categories, Long>,
     default void customize(final QuerydslBindings bindings, final QCategories root) {
     }
 
+    Optional<Categories> findFirstByName(String name);
 }

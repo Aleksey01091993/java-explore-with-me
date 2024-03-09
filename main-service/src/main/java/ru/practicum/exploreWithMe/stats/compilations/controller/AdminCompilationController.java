@@ -9,9 +9,7 @@ import ru.practicum.exploreWithMe.stats.compilations.dto.NewCompilationDto;
 import ru.practicum.exploreWithMe.stats.compilations.dto.UpdateCompilationRequest;
 import ru.practicum.exploreWithMe.stats.compilations.service.CompilationService;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.net.http.HttpResponse;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,12 +35,11 @@ public class AdminCompilationController {
         return response;
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{compilationId}")
-    public CompilationDto delete(@PathVariable Long compilationId) {
+    public void delete(@PathVariable Long compilationId) {
         log.info("Пришел DELETE запрос /admin/compilations/{}", compilationId);
-        final CompilationDto response = service.delete(compilationId);
-        log.info("Отправлен ответ для DELETE запроса /admin/compilations/{} с телом: {}", compilationId, response);
-        return response;
+        service.delete(compilationId);
     }
 
 

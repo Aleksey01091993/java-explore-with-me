@@ -17,6 +17,7 @@ import ru.practicum.exploreWithMe.stats.users.model.User;
 import ru.practicum.exploreWithMe.stats.users.repository.UserRepository;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -33,10 +34,13 @@ public class RequestService {
         if (request != null) {
             throw new ConflictError("such a request already exists");
         }
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("user not found by id: " + userId));
         Event event = eventsRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("event not found by id: " + eventId));
+        if (!(event.getState() == Status.PUBLISHED)) {
+            throw new ConflictError("Adding a request to participate in an unpublished event");
+        }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("user not found by id: " + userId));
         if (event.getInitiator().getId().equals(userId)) {
             throw new ConflictError("the initiator of the event cannot add a request to participate in his event");
         }
@@ -53,9 +57,9 @@ public class RequestService {
         return RequestMapper.toDto(repository.save(requestCreate));
     }
 
-    public ParticipationRequestDto canceled(Long eventId, Long userId) {
-        Request request = repository.findFirstByRequester_IdAndEvent_Id(userId, eventId)
-                .orElseThrow(() -> new NotFoundException("event or user not found by id: " + eventId + "," + userId));
+    public ParticipationRequestDto canceled(Long userId, Long requestId) {
+        Request request = repository.findFirstByIdAndRequester_Id(requestId, userId)
+                .orElseThrow(() -> new NotFoundException("requestId or userId not found by request: " + requestId + "," + userId));
         if (request.getStatus() == Status.CONFIRMED) {
             request.getEvent().setConfirmedRequest(request.getEvent().getConfirmedRequest() - 1);
             eventsRepository.save(request.getEvent());
@@ -69,7 +73,11 @@ public class RequestService {
     }
 
     public List<ParticipationRequestDto> getAllUser(Long userId, Long eventId) {
-        return repository.findAllByRequester_IdAndEvent_Id(userId, eventId).stream()
+        Event event = eventsRepository.findFirstByIdAndInitiator_Id(eventId, userId).orElse(null);
+        if (event == null) {
+            return Collections.emptyList();
+        }
+        return repository.findAllByEvent_Id(eventId).stream()
                 .map(RequestMapper::toDto).collect(Collectors.toList());
     }
 
@@ -89,12 +97,11 @@ public class RequestService {
         List<ParticipationRequestDto> confirmedRequests = new ArrayList<>();
         List<ParticipationRequestDto> rejectedRequests = new ArrayList<>();
         for (Request value : search) {
-            if (event.getParticipantLimit() == 0 || !event.getRequestModeration()) {
+            if (request.getStatus() == Status.REJECTED) {
                 value.setStatus(request.getStatus());
                 save.add(value);
-                confirmedRequests.add(RequestMapper.toDto(value));
-                event.setConfirmedRequest(event.getConfirmedRequest() + 1);
-            } else {
+                rejectedRequests.add(RequestMapper.toDto(value));
+            } else if (request.getStatus() == Status.CONFIRMED) {
                 if (!Objects.equals(event.getConfirmedRequest(), event.getParticipantLimit())) {
                     value.setStatus(request.getStatus());
                     save.add(value);
@@ -105,7 +112,6 @@ public class RequestService {
                     rejectedRequests.add(RequestMapper.toDto(value));
                     save.add(value);
                 }
-
             }
         }
         eventsRepository.save(event);
