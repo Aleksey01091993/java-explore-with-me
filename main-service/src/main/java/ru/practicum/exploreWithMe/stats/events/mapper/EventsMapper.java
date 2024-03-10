@@ -12,11 +12,11 @@ import ru.practicum.exploreWithMe.stats.statuses.StateAction;
 import ru.practicum.exploreWithMe.stats.statuses.Status;
 import ru.practicum.exploreWithMe.stats.statuses.UserStateAction;
 import ru.practicum.exploreWithMe.stats.users.mapper.UserMapper;
+import ru.practicum.exploreWithMe.stats.users.model.User;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class EventsMapper {
@@ -74,8 +74,11 @@ public class EventsMapper {
                 .pageable(PageRequest.of(from / size, size))
                 .build();
     }
-    public static Event toCreate(NewEventDto event) {
+
+    public static Event toCreate(NewEventDto event, User user, Categories category) {
         return Event.builder()
+                .initiator(user)
+                .category(category)
                 .annotation(event.getAnnotation())
                 .confirmedRequest(0)
                 .createdOn(LocalDateTime.now())

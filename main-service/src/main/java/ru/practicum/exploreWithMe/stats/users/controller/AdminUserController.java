@@ -22,9 +22,7 @@ public class AdminUserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto add(
-            @RequestBody @Valid NewUserRequest user
-    ) {
+    public UserDto add(@RequestBody @Valid NewUserRequest user) {
         log.info("Пришел POST запрос admin/users с телом: {}", user);
         final UserDto userResponse = service.add(user);
         log.info("Отправлен ответ для POST запроса /admin/users с телом: {}", userResponse);
@@ -46,9 +44,7 @@ public class AdminUserController {
 
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public UserDto delete(
-            @PathVariable Long userId
-    ) {
+    public UserDto delete(@PathVariable Long userId) {
         log.info("Пришел DELETE запрос admin/users/{}", userId);
         final UserDto userResponse = service.delete(userId);
         log.info("Отправлен ответ для DELETE запроса с телом: {}", userResponse);

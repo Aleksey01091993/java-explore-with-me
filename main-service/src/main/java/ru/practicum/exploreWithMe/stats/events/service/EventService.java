@@ -1,9 +1,7 @@
 package ru.practicum.exploreWithMe.stats.events.service;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +10,6 @@ import ru.practicum.exploreWithMe.stats.categories.model.Categories;
 import ru.practicum.exploreWithMe.stats.categories.repository.CategoriesRepository;
 import ru.practicum.exploreWithMe.stats.client.StatsClient;
 import ru.practicum.exploreWithMe.stats.dto.ResponseGetStatsDto;
-import ru.practicum.exploreWithMe.stats.dto.ResponseStatsDto;
 import ru.practicum.exploreWithMe.stats.events.dto.*;
 import ru.practicum.exploreWithMe.stats.events.mapper.EventsMapper;
 import ru.practicum.exploreWithMe.stats.events.model.Event;
@@ -56,11 +53,7 @@ public class EventService {
                 .orElseThrow(() -> new NotFoundException("user not found by id: " + id));
         Categories categories = categoriesRepository.findById(event.getCategory())
                 .orElseThrow(() -> new NotFoundException("Category not found by id: " + event.getCategory()));
-        Event eventSave = EventsMapper.toCreate(event);
-        eventSave.setInitiator(user);
-        eventSave.setCategory(categories);
-        Event response = repository.save(eventSave);
-        return EventsMapper.toEventCreate(response);
+        return EventsMapper.toEventCreate(repository.save(EventsMapper.toCreate(event, user, categories)));
     }
 
     public EventFullDto update(UpdateEventUserRequest event, Long userId, Long eventId, HttpServletRequest request) {

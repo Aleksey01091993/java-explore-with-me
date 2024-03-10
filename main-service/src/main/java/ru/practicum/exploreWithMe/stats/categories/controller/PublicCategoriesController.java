@@ -27,9 +27,7 @@ public class PublicCategoriesController {
     }
 
     @GetMapping("/{catId}")
-    public CategoryDto get(
-            @PathVariable Long catId
-    ) {
+    public CategoryDto get(@PathVariable Long catId) {
         log.info("Пришел GET запрос /categories/{}", catId);
         final CategoryDto categoryResponse = service.get(catId);
         log.info("Отправлен ответ для GET запроса /categories/{} с телом: {}", catId, categoryResponse);

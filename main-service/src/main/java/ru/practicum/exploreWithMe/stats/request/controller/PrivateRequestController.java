@@ -21,10 +21,7 @@ public class PrivateRequestController {
 
     @PostMapping("/requests")
     @ResponseStatus(HttpStatus.CREATED)
-    public ParticipationRequestDto create(
-            @PathVariable Long userId,
-            @RequestParam Long eventId
-    ) {
+    public ParticipationRequestDto create(@PathVariable Long userId, @RequestParam Long eventId) {
         log.info("Пришел POST запрос /users/{}/requests?eventId={}", userId, eventId);
         final ParticipationRequestDto response = service.create(userId, eventId);
         log.info("Отправлен ответ для POST запроса /users/{}/requests?eventId={} с телом: {}", userId, eventId, response);
@@ -32,10 +29,7 @@ public class PrivateRequestController {
     }
 
     @PatchMapping("/requests/{requestId}/cancel")
-    public ParticipationRequestDto canceled(
-            @PathVariable Long userId,
-            @PathVariable Long requestId
-    ) {
+    public ParticipationRequestDto canceled(@PathVariable Long userId, @PathVariable Long requestId) {
         log.info("Пришел PATCH запрос /users/{}/requests/{}/cancel", userId, requestId);
         final ParticipationRequestDto response = service.canceled(userId, requestId);
         log.info("Отправлен ответ для PATCH запроса /users/{}/requests/{}/cancel с телом: {}", userId, requestId, response);
@@ -55,10 +49,7 @@ public class PrivateRequestController {
     }
 
     @GetMapping("/events/{eventId}/requests")
-    public List<ParticipationRequestDto> getAllUser(
-            @PathVariable Long userId,
-            @PathVariable Long eventId
-    ) {
+    public List<ParticipationRequestDto> getAllUser(@PathVariable Long userId, @PathVariable Long eventId) {
         log.info("Пришел GET запрос /users/{}/events/{}/requests", userId, eventId);
         final List<ParticipationRequestDto> response = service.getAllUser(userId, eventId);
         log.info("Отправлен ответ для GET запроса /users/{}/events/{}/requests с телом: {}", userId, eventId, response);
@@ -66,9 +57,7 @@ public class PrivateRequestController {
     }
 
     @GetMapping("/requests")
-    public List<ParticipationRequestDto> getAll(
-            @PathVariable Long userId
-    ) {
+    public List<ParticipationRequestDto> getAll(@PathVariable Long userId) {
         log.info("Пришел GET запрос /users/{}/requests", userId);
         final List<ParticipationRequestDto> response = service.getAll(userId);
         log.info("Отправлен ответ для GET запроса /users/{}/requests с телом: {}", userId, response);

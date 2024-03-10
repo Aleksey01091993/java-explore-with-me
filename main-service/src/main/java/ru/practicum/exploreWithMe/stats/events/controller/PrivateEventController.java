@@ -3,7 +3,6 @@ package ru.practicum.exploreWithMe.stats.events.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.exploreWithMe.stats.events.dto.EventFullDto;
 import ru.practicum.exploreWithMe.stats.events.dto.EventShortDto;
@@ -13,7 +12,6 @@ import ru.practicum.exploreWithMe.stats.events.service.EventService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-
 import java.util.List;
 
 @RestController
@@ -25,10 +23,7 @@ public class PrivateEventController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public EventFullDto create(
-            @RequestBody @Valid NewEventDto event,
-            @PathVariable Long userId
-    ) {
+    public EventFullDto create(@RequestBody @Valid NewEventDto event, @PathVariable Long userId) {
         log.info("Пришел POST запрос users/{}/events с телом: {}", userId, event);
         final EventFullDto response = service.create(event, userId);
         log.info("Отправлен ответ для POST запроса users/{}/events с телом: {}", userId, response);
@@ -61,10 +56,7 @@ public class PrivateEventController {
     }
 
     @GetMapping("/{eventId}")
-    public EventFullDto get(
-            @PathVariable Long userId,
-            @PathVariable Long eventId
-    ) {
+    public EventFullDto get(@PathVariable Long userId, @PathVariable Long eventId) {
         log.info("Пришел GET запрос users/{}/events/{}", userId, eventId);
         final EventFullDto response = service.getUserIdAndEventId(userId, eventId);
         log.info("Отправлен ответ для GET запроса users/{}/events/{} с телом: {}", userId, eventId, response);

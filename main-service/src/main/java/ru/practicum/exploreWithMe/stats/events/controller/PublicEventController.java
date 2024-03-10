@@ -7,7 +7,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.exploreWithMe.stats.client.StatsClient;
 import ru.practicum.exploreWithMe.stats.events.dto.EventFullDto;
-import ru.practicum.exploreWithMe.stats.events.dto.EventShortDto;
 import ru.practicum.exploreWithMe.stats.events.mapper.EventsMapper;
 import ru.practicum.exploreWithMe.stats.events.service.EventService;
 
@@ -46,9 +45,7 @@ public class PublicEventController {
     }
 
     @GetMapping("/{eventId}")
-    public EventFullDto get(
-            @PathVariable Long eventId, HttpServletRequest request
-    ) {
+    public EventFullDto get(@PathVariable Long eventId, HttpServletRequest request) {
         log.info("Пришел GET запрос /events/{}", eventId);
         client.hit(request);
         final EventFullDto response = service.get(eventId, request);

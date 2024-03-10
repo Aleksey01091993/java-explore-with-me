@@ -7,9 +7,6 @@ import ru.practicum.exploreWithMe.stats.events.model.Location;
 import ru.practicum.exploreWithMe.stats.statuses.Status;
 import ru.practicum.exploreWithMe.stats.users.dto.UserShortDto;
 
-
-import java.time.LocalDateTime;
-
 @Data
 @Builder
 public class EventFullDto {

@@ -19,9 +19,7 @@ public class AdminCategoriesController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public CategoryDto add(
-            @RequestBody @Valid NewCategoryDto category
-    ) {
+    public CategoryDto add(@RequestBody @Valid NewCategoryDto category) {
         log.info("Пришел POST запрос /admin/categories с телом: {}", category);
         final CategoryDto categoryResponse = service.add(category);
         log.info("Отправлен ответ для POST запроса /admin/categories с телом: {}", categoryResponse);
@@ -29,10 +27,7 @@ public class AdminCategoriesController {
     }
 
     @PatchMapping("/{catId}")
-    public CategoryDto update(
-            @PathVariable Long catId,
-            @RequestBody @Valid NewCategoryDto category
-    ) {
+    public CategoryDto update(@PathVariable Long catId, @RequestBody @Valid NewCategoryDto category) {
         log.info("Пришел PATH запрос /admin/categories/{} с телом: {}", catId, category);
         final CategoryDto categoryResponse = service.update(category, catId);
         log.info("Отправлен ответ для PATH запроса /admin/categories/{} с телом: {}", catId, categoryResponse);
@@ -41,9 +36,7 @@ public class AdminCategoriesController {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{catId}")
-    public CategoryDto delete(
-            @PathVariable Long catId
-    ) {
+    public CategoryDto delete(@PathVariable Long catId) {
         log.info("Пришел DELETE запрос /admin/categories/{}", catId);
         final CategoryDto categoryResponse = service.delete(catId);
         log.info("Отправлен ответ для DELETE запроса /admin/categories/{} с телом: {}", catId, categoryResponse);

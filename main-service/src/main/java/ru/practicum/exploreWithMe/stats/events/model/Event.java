@@ -5,10 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.exploreWithMe.stats.categories.model.Categories;
-import ru.practicum.exploreWithMe.stats.statuses.StateAction;
 import ru.practicum.exploreWithMe.stats.statuses.Status;
 import ru.practicum.exploreWithMe.stats.users.model.User;
-
 
 import javax.persistence.*;
 import java.io.Serializable;
