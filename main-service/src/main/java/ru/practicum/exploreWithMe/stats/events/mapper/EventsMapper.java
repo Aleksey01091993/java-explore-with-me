@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import ru.practicum.exploreWithMe.stats.categories.mapper.MapperCategories;
 import ru.practicum.exploreWithMe.stats.categories.model.Categories;
+import ru.practicum.exploreWithMe.stats.coments.mapper.CommentMapper;
 import ru.practicum.exploreWithMe.stats.events.dto.*;
 import ru.practicum.exploreWithMe.stats.events.model.Event;
 import ru.practicum.exploreWithMe.stats.querydsl.EventFilterModel;
@@ -133,6 +134,8 @@ public class EventsMapper {
                 .state(event.getState())
                 .title(event.getTitle())
                 .views(event.getViews())
+                .comments(event.getComments() == null ? null :
+                        event.getComments().stream().map(CommentMapper::toResponse).collect(Collectors.toList()))
                 .build();
     }
 

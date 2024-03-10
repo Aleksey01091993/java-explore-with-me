@@ -23,9 +23,10 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class StatsService {
-    private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private final StatsRepository repository;
     private final StatsUniqueRepository uniqueRepository;
+
+    private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public ResponseStatsDto add(RequestStatsDto stats) {
         StatsUnique statsUnique = uniqueRepository
@@ -38,6 +39,8 @@ public class StatsService {
             uniqueRepository.save(MapperToStats.toStatsUnique(stats));
             return MapperToStats.toResponseStats(repository.save(MapperToStats.toStats(stats)));
         }
+
+
 
 
     }

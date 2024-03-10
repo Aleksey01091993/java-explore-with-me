@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 
 public class MapperToStats {
     private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
     public static Stats toStats(RequestStatsDto requestStatsDto) {
         return Stats.builder()
                 .app(requestStatsDto.getApp())
@@ -57,7 +56,7 @@ public class MapperToStats {
                 mapStats.put(key, 1);
             }
         }
-        for (String key : mapStats.keySet()) {
+        for (String key: mapStats.keySet()) {
             response.add(
                     ResponseGetStatsDto.builder()
                             .app("ewm-main-service")
@@ -82,7 +81,7 @@ public class MapperToStats {
                 mapStats.put(key, 1);
             }
         }
-        for (String key : mapStats.keySet()) {
+        for (String key: mapStats.keySet()) {
             response.add(
                     ResponseGetStatsDto.builder()
                             .app("ewm-main-service")
@@ -95,6 +94,7 @@ public class MapperToStats {
                 .sorted((o1, o2) -> o2.getHits() - o1.getHits())
                 .collect(Collectors.toList());
     }
+
 
 
 }
