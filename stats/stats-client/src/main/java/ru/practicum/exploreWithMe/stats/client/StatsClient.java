@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHeaders;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.practicum.exploreWithMe.stats.dto.RequestStatsDto;
 import ru.practicum.exploreWithMe.stats.dto.ResponseGetStatsDto;
@@ -30,11 +29,9 @@ public class StatsClient {
     private final ObjectMapper json;
     private final HttpClient httpClient;
 
-    public StatsClient(@Value("${spring.application.name}") String application,
-                       @Value("${services.stats-service.uri") String statsServiceUri,
-                       ObjectMapper json) {
-        this.application = application;
-        this.statsServiceUri = statsServiceUri;
+    public StatsClient(ObjectMapper json) {
+        this.application = "ewm-main-service";
+        this.statsServiceUri = "http://localhost:9090";
         this.json = json;
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(2))
@@ -68,16 +65,17 @@ public class StatsClient {
         }
     }
 
-    public List<ResponseGetStatsDto> getStats(HttpServletRequest adminRequest) {
+    public List<ResponseGetStatsDto> getStats(HttpServletRequest adminRequest, String uri) {
         try {
             HttpRequest statsRequest = HttpRequest.newBuilder()
-                    .uri(URI.create(adminRequest.getRequestURI()))
+                    .uri(URI.create(statsServiceUri + "/stats?uris=/events" + uri + "&unique=true"))
                     .GET()
                     .header(HttpHeaders.CONTENT_TYPE, "application/json")
                     .header(HttpHeaders.ACCEPT, "application/json")
                     .build();
             HttpResponse<String> response = httpClient.send(statsRequest, HttpResponse.BodyHandlers.ofString());
-            return json.readValue(response.body(), new TypeReference<>() {
+            String string = response.body();
+            return json.readValue(response.body(), new TypeReference<List<ResponseGetStatsDto>>() {
             });
         } catch (Exception e) {
             log.warn("I can't get statistics", e);
