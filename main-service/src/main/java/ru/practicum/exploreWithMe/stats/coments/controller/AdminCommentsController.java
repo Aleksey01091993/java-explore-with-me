@@ -3,12 +3,12 @@ package ru.practicum.exploreWithMe.stats.coments.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.exploreWithMe.stats.coments.dto.CommentResponse;
 import ru.practicum.exploreWithMe.stats.coments.service.CommentsService;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -18,12 +18,13 @@ import java.util.List;
 public class AdminCommentsController {
     private final CommentsService service;
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+
     @DeleteMapping
-    public void deleteAdmin(@RequestParam @Nullable List<Long> ids) {
+    public ResponseEntity<Object> deleteAdmin(@RequestParam @Nullable List<Long> ids) {
         log.info("Пришел DELETE запрос /admin/comments?ids={}", ids);
-        service.deleteAdmin(ids);
-        log.info("Запрос выполнен");
+        ResponseEntity<Object> response = service.deleteAdmin(ids);
+        log.info("Запрос выполнен, ответ : {}", response);
+        return response;
     }
 
     @GetMapping("/{commentId}")
@@ -34,18 +35,20 @@ public class AdminCommentsController {
         return response;
     }
 
-    @GetMapping
-    public List<CommentResponse> getAll(@RequestParam @Nullable List<Long> usersIds,
-                                        @RequestParam @Nullable List<Long> eventIds,
-                                        @RequestParam @Nullable List<Long> commentsIds,
-                                        @RequestParam @Nullable LocalDateTime start,
-                                        @RequestParam @Nullable LocalDateTime end) {
 
-        log.info("Пришел GET запрос /admin/comments?usersIds={}&eventIds={}&commentsIds={}&start={}&end={}",
-                usersIds, eventIds, commentsIds, start, end);
-        List<CommentResponse> response = service.getAll(usersIds, eventIds, commentsIds, start, end);
-        log.info("Отправлен ответ для GET запроса /admin/comments?usersIds={}&eventIds={}&commentsIds={}&start={}&end={} с телом: {}",
-                usersIds, eventIds, commentsIds, start, end, response);
+    @GetMapping
+    public List<CommentResponse> getAll(@RequestParam @Nullable List<Long> userIds,
+                                        @RequestParam @Nullable List<Long> eventIds,
+                                        @RequestParam @Nullable List<Long> commentIds,
+                                        @RequestParam @Nullable String text,
+                                        @RequestParam @Nullable String start,
+                                        @RequestParam @Nullable String end) {
+
+        log.info("Пришел GET запрос /admin/comments?userIds={}&eventIds={}&commentIds={}&start={}&end={}",
+                userIds, eventIds, commentIds, start, end);
+        List<CommentResponse> response = service.getAll(userIds, eventIds, commentIds, start, end, text);
+        log.info("Отправлен ответ для GET запроса /admin/comments?userIds={}&eventIds={}&commentIds={}&start={}&end={} с телом: {}",
+                userIds, eventIds, commentIds, start, end, response);
         return response;
     }
 

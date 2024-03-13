@@ -22,4 +22,6 @@ public interface CommentsRepository extends JpaRepository<Comments, Long>,
 
     }
     Optional<Comments> findFirstByIdAndAuthor_Id(Long id, Long userId);
+
+    List<Comments> findAllByIdIn(List<Long> ids);
 }

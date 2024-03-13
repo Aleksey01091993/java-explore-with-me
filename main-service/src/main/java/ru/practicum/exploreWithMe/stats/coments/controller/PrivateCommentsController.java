@@ -8,6 +8,8 @@ import ru.practicum.exploreWithMe.stats.coments.dto.CommentRequest;
 import ru.practicum.exploreWithMe.stats.coments.dto.CommentResponse;
 import ru.practicum.exploreWithMe.stats.coments.service.CommentsService;
 
+import javax.validation.Valid;
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -19,7 +21,7 @@ public class PrivateCommentsController {
     @PostMapping("/events/{eventId}/comments")
     public CommentResponse create(@PathVariable Long userId,
                                   @PathVariable Long eventId,
-                                  @RequestBody CommentRequest request) {
+                                  @RequestBody @Valid CommentRequest request) {
         log.info("Пришел POST запрос /users/{}/events/{}/comments с телом: {}", userId, eventId, request);
         CommentResponse response = service.create(userId, eventId, request);
         log.info("Отправлен ответ для POST запроса /users/{}/events/{}/comments с телом: {}", userId, eventId, request);
@@ -29,7 +31,7 @@ public class PrivateCommentsController {
     @PatchMapping("/comments/{commentId}")
     public CommentResponse update(@PathVariable Long userId,
                                   @PathVariable Long commentId,
-                                  @RequestBody CommentRequest request) {
+                                  @RequestBody @Valid CommentRequest request) {
         log.info("Пришел PATCH запрос /users/{}/comments/{} с телом: {}", userId, commentId, request);
         CommentResponse response = service.update(commentId, userId, request);
         log.info("Отправлен ответ для PATCH запроса /users/{}/comments/{} с телом: {}", userId, commentId, request);

@@ -3,6 +3,10 @@ package ru.practicum.exploreWithMe.stats.coments.service;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import lombok.RequiredArgsConstructor;
+import org.aspectj.weaver.Iterators;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.practicum.exploreWithMe.stats.coments.dto.CommentRequest;
 import ru.practicum.exploreWithMe.stats.coments.dto.CommentResponse;
@@ -17,7 +21,9 @@ import ru.practicum.exploreWithMe.stats.statuses.Status;
 import ru.practicum.exploreWithMe.stats.users.model.User;
 import ru.practicum.exploreWithMe.stats.users.repository.UserRepository;
 
+import javax.swing.text.html.HTMLDocument;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -29,14 +35,15 @@ public class CommentsService {
     private final CommentsRepository repository;
     private final EventsRepository eventsRepository;
     private final UserRepository userRepository;
+    private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 
     public CommentResponse create(Long userId, Long eventId, CommentRequest commentRequest) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("user not found by id: " + userId));
         Event event = eventsRepository.findFirstByIdAndState(eventId, Status.PUBLISHED)
-                .orElseThrow(() -> new NotFoundException("event not found by id: " + userId
-                        + "or comments can only be left by the completed event"));
+                .orElseThrow(() -> new NotFoundException("event not found by id: " + eventId
+                        + " or comments can only be left by the completed event"));
         Comments comments = repository.save(CommentMapper.toComment(commentRequest, user, event));
         return CommentMapper.toResponse(comments);
     }
@@ -45,7 +52,9 @@ public class CommentsService {
     public CommentResponse update(Long commentsId, Long authorId, CommentRequest request) {
         Comments comments = repository.findFirstByIdAndAuthor_Id(commentsId, authorId)
                 .orElseThrow(() -> new NotFoundException("user or comments not found by id"));
-        return CommentMapper.toResponse(CommentMapper.toUpdate(request, comments));
+        Comments newComments = repository.save(CommentMapper.toUpdate(request, comments));
+        CommentResponse response = CommentMapper.toResponse(newComments);
+        return response;
     }
 
 
@@ -56,9 +65,22 @@ public class CommentsService {
     }
 
 
-    public void deleteAdmin(List<Long> commentsIds) {
-        if (commentsIds != null || !commentsIds.isEmpty()) {
-            repository.deleteAllById(commentsIds);
+    public ResponseEntity<Object> deleteAdmin(List<Long> commentsIds) {
+        if (commentsIds != null) {
+            List<Comments> comments = repository.findAllByIdIn(commentsIds);
+            if (!comments.isEmpty()) {
+                if (comments.size() < commentsIds.size()) {
+                    repository.deleteAllById(commentsIds);
+                    return new ResponseEntity<>(HttpEntity.EMPTY, HttpStatus.NON_AUTHORITATIVE_INFORMATION);
+                } else {
+                    repository.deleteAllById(commentsIds);
+                    return new ResponseEntity<>(HttpEntity.EMPTY, HttpStatus.NO_CONTENT);
+                }
+            } else {
+                throw new NotFoundException("commentsIds not found by id");
+            }
+        } else {
+            throw new NotFoundException("commentsIds is null");
         }
     }
 
@@ -69,13 +91,14 @@ public class CommentsService {
     }
 
 
-    public List<CommentResponse> getAll(List<Long> usersIds,
-                                        List<Long> eventsIds,
-                                        List<Long> commentsIds,
-                                        LocalDateTime start,
-                                        LocalDateTime end) {
+    public List<CommentResponse> getAll(List<Long> userIds,
+                                        List<Long> eventIds,
+                                        List<Long> commentIds,
+                                        String start,
+                                        String end,
+                                        String text) {
         {
-            BooleanExpression expression = this.expression(start, end, usersIds, eventsIds, commentsIds);
+            BooleanExpression expression = this.expression(start, end, userIds, eventIds, commentIds, text);
             if (expression == null) {
                 return repository.findAll().stream().map(CommentMapper::toResponse).collect(Collectors.toList());
             } else {
@@ -88,25 +111,23 @@ public class CommentsService {
 
     }
 
-    private BooleanExpression expression(LocalDateTime startTime,
-                                         LocalDateTime endTime,
-                                         List<Long> usersIds,
-                                         List<Long> eventsIds,
-                                         List<Long> commentsIds) {
-
-        List<BooleanExpression> expressionsOr = new ArrayList<>();
-        List<BooleanExpression> expressionsAnd = new ArrayList<>();
-            Optional.ofNullable(startTime).ifPresent(o1 -> expressionsAnd.add(QComments.comments.created.after(o1)));
-            Optional.ofNullable(endTime).ifPresent(o1 -> expressionsAnd.add(QComments.comments.created.before(o1)));
-            Optional.ofNullable(usersIds).ifPresent(o1 -> expressionsOr.add(QComments.comments.author.id.in(o1)));
-            Optional.ofNullable(eventsIds).ifPresent(o1 -> expressionsOr.add(QComments.comments.event.id.in(o1)));
-            Optional.ofNullable(commentsIds).ifPresent(o1 -> expressionsOr.add(QComments.comments.id.in(o1)));
-
+    private BooleanExpression expression(String startTime,
+                                         String endTime,
+                                         List<Long> userIds,
+                                         List<Long> eventIds,
+                                         List<Long> commentIds,
+                                         String text) {
+        LocalDateTime start = startTime == null || startTime.isEmpty() ? null : LocalDateTime.parse(startTime, DTF);
+        LocalDateTime end = endTime == null || endTime.isEmpty() ? null : LocalDateTime.parse(endTime, DTF);
+        List<BooleanExpression> expressions = new ArrayList<>();
+            Optional.ofNullable(start).ifPresent(o1 -> expressions.add(QComments.comments.created.after(o1)));
+            Optional.ofNullable(end).ifPresent(o1 -> expressions.add(QComments.comments.created.before(o1)));
+            Optional.ofNullable(userIds).ifPresent(o1 -> expressions.add(QComments.comments.author.id.in(o1)));
+            Optional.ofNullable(eventIds).ifPresent(o1 -> expressions.add(QComments.comments.event.id.in(o1)));
+            Optional.ofNullable(commentIds).ifPresent(o1 -> expressions.add(QComments.comments.id.in(o1)));
+            Optional.ofNullable(text).ifPresent(o1 -> expressions.add(QComments.comments.text.containsIgnoreCase(o1)));
         BooleanExpression result = Expressions.asBoolean(true).isTrue();
-        for (BooleanExpression predicate : expressionsOr) {
-            result = result.or(predicate);
-        }
-        for (BooleanExpression predicate : expressionsAnd) {
+        for (BooleanExpression predicate : expressions) {
             result = result.and(predicate);
         }
         return result;

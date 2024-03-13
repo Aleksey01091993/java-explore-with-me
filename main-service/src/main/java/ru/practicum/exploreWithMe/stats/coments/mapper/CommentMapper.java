@@ -7,8 +7,11 @@ import ru.practicum.exploreWithMe.stats.events.model.Event;
 import ru.practicum.exploreWithMe.stats.users.model.User;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class CommentMapper {
+    private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
     public static Comments toComment(CommentRequest commentRequest, User author, Event event) {
         return Comments.builder()
                 .text(commentRequest.getText())
@@ -23,7 +26,7 @@ public class CommentMapper {
                 .id(comment.getId())
                 .text(comment.getText())
                 .authorName(comment.getAuthor().getName())
-                .created(comment.getCreated())
+                .created(comment.getCreated().format(DTF))
                 .build();
     }
 
