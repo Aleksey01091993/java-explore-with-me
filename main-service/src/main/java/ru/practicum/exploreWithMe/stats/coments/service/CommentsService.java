@@ -3,7 +3,6 @@ package ru.practicum.exploreWithMe.stats.coments.service;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.weaver.Iterators;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +20,6 @@ import ru.practicum.exploreWithMe.stats.statuses.Status;
 import ru.practicum.exploreWithMe.stats.users.model.User;
 import ru.practicum.exploreWithMe.stats.users.repository.UserRepository;
 
-import javax.swing.text.html.HTMLDocument;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -52,9 +50,7 @@ public class CommentsService {
     public CommentResponse update(Long commentsId, Long authorId, CommentRequest request) {
         Comments comments = repository.findFirstByIdAndAuthor_Id(commentsId, authorId)
                 .orElseThrow(() -> new NotFoundException("user or comments not found by id"));
-        Comments newComments = repository.save(CommentMapper.toUpdate(request, comments));
-        CommentResponse response = CommentMapper.toResponse(newComments);
-        return response;
+        return CommentMapper.toResponse(repository.save(CommentMapper.toUpdate(request, comments)));
     }
 
 
@@ -70,10 +66,10 @@ public class CommentsService {
             List<Comments> comments = repository.findAllByIdIn(commentsIds);
             if (!comments.isEmpty()) {
                 if (comments.size() < commentsIds.size()) {
-                    repository.deleteAllById(commentsIds);
+                    repository.deleteAll(comments);
                     return new ResponseEntity<>(HttpEntity.EMPTY, HttpStatus.NON_AUTHORITATIVE_INFORMATION);
                 } else {
-                    repository.deleteAllById(commentsIds);
+                    repository.deleteAll(comments);
                     return new ResponseEntity<>(HttpEntity.EMPTY, HttpStatus.NO_CONTENT);
                 }
             } else {

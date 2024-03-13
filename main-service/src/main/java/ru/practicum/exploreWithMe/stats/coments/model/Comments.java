@@ -1,7 +1,6 @@
 package ru.practicum.exploreWithMe.stats.coments.model;
 
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import ru.practicum.exploreWithMe.stats.events.model.Event;
 import ru.practicum.exploreWithMe.stats.users.model.User;
@@ -24,7 +23,7 @@ public class Comments implements Serializable {
     private Long id;
     @Column(name = "text", length = 7000)
     private String text;
-    @ManyToOne(cascade = CascadeType.ALL, optional = false)
+    @ManyToOne(optional = false)
     private Event event;
     @ManyToOne
     private User author;

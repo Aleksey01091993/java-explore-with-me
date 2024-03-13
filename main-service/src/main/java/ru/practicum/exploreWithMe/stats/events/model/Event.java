@@ -1,19 +1,19 @@
 package ru.practicum.exploreWithMe.stats.events.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.practicum.exploreWithMe.stats.categories.model.Categories;
 import ru.practicum.exploreWithMe.stats.coments.model.Comments;
-import ru.practicum.exploreWithMe.stats.statuses.StateAction;
 import ru.practicum.exploreWithMe.stats.statuses.Status;
 import ru.practicum.exploreWithMe.stats.users.model.User;
-
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Data
 @Entity
@@ -47,7 +47,7 @@ public class Event implements Serializable {
     @Column(length = 120)
     private String title;
     private Integer views;
-    @OneToMany(mappedBy = "event")
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<Comments> comments = new ArrayList<>();
 
 }
