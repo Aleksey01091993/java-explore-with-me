@@ -31,6 +31,8 @@
 							"\r",
 							"const source = JSON.parse(pm.request.body.raw);\r",
 							"const target = pm.response.json();\r",
+							"pm.globals.set('user1', target);\r",
+							"pm.globals.set('user1id', target.id)\r",
 							"\r",
 							"pm.test(\"Пользователь должен содержать поля: id, name, email\", function () {\r",
 							"pm.expect(target).to.have.property('id');\r",
@@ -39,7 +41,7 @@
 							"});\r",
 							"\r",
 							"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
-							"    pm.expect(target.id).equal(1);\r",
+							"    pm.expect(target.id).equal(pm.globals.get(\"user1id\"));\r",
 							"    pm.expect(target.name).equal(source.name, 'Имя пользователя должно соответствовать отправленному в запросе');\r",
 							"    pm.expect(target.email).equal(source.email, 'Почта пользователя должна соответствовать отправленной в запросе');\r",
 							"});"
@@ -100,6 +102,7 @@
 							"\r",
 							"const source = JSON.parse(pm.request.body.raw);\r",
 							"const target = pm.response.json();\r",
+							"pm.globals.set('category1', target);\r",
 							"\r",
 							"pm.test(\"Котегория должна содержать поля: id, name\", function () {\r",
 							"pm.expect(target).to.have.property('id');\r",
@@ -107,7 +110,7 @@
 							"});\r",
 							"\r",
 							"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
-							"    pm.expect(target.id).equal(1);\r",
+							"    pm.expect(target.id).equal(pm.globals.get(\"category1\").id);\r",
 							"    pm.expect(target.name).equal(source.name, 'Имя категории должно соответствовать отправленному в запросе');\r",
 							"});"
 						],
@@ -156,6 +159,8 @@
 							"\r",
 							"const source = JSON.parse(pm.request.body.raw);\r",
 							"const target = pm.response.json();\r",
+							"pm.globals.set('event1', target);\r",
+							"pm.globals.set('event1id', target.id);\r",
 							"\r",
 							"pm.test(\"Событие должно содержать поля: id, title, annotation, category, paid, eventDate, initiator, description, participantLimit, state, createdOn, location, requestModeration\", function () {\r",
 							"pm.expect(target).to.have.property('id');\r",
@@ -174,7 +179,7 @@
 							"});\r",
 							"\r",
 							"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
-							"    pm.expect(target.id).equal(1);\r",
+							"    pm.expect(target.id).equal(pm.globals.get(\"event1id\"));\r",
 							"    pm.expect(target.title).equal(source.title, 'Название события должно соответствовать названию события в запросе');\r",
 							"    pm.expect(target.annotation).equal(source.annotation, 'Аннотация события должна соответствовать аннотации события в запросе');\r",
 							"    pm.expect(target.paid.toString()).equal(source.paid.toString(), 'Стоимость события должна соответствовать стоимости события в запросе');\r",
@@ -217,7 +222,7 @@
 					"variable": [
 						{
 							"key": "id",
-							"value": "1"
+							"value": "{{user1id}}"
 						}
 					]
 				}
@@ -239,6 +244,10 @@
 							"\r",
 							"const source = JSON.parse(pm.request.body.raw);\r",
 							"const target = pm.response.json();\r",
+							"pm.globals.unset(\"event1\");\r",
+							"pm.globals.set('event1', target);\r",
+							"\r",
+							"\r",
 							"\r",
 							"pm.test(\"Событие должно содержать поля: id, title, annotation, category, paid, eventDate, initiator, description, participantLimit, state, createdOn, location, requestModeration\", function () {\r",
 							"pm.expect(target).to.have.property('id');\r",
@@ -257,9 +266,19 @@
 							"});\r",
 							"\r",
 							"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
-							"    pm.expect(target.id).equal(1);\r",
+							"    pm.expect(target.id).equal(pm.globals.get(\"event1id\"));\r",
 							"    pm.expect(target.state).equal(\"PUBLISHED\", 'Статус события должно соответствовать статусу события в запросе');\r",
 							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
 							""
 						],
 						"type": "text/javascript",
@@ -292,7 +311,7 @@
 					"variable": [
 						{
 							"key": "id",
-							"value": "1"
+							"value": "{{event1id}}"
 						}
 					]
 				}
@@ -314,7 +333,8 @@
 							"\r",
 							"const source = JSON.parse(pm.request.body.raw);\r",
 							"const target = pm.response.json();\r",
-							"pm.globals.set('comment1', target.created);\r",
+							"pm.globals.set('comment1', target);\r",
+							"pm.globals.set('comment1id', target.id);\r",
 							"\r",
 							"pm.test(\"комментарий должен содержать поля: id, text, authorName, created\", function () {\r",
 							"pm.expect(target).to.have.property('id');\r",
@@ -324,10 +344,10 @@
 							"});\r",
 							"\r",
 							"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
-							"    pm.expect(target.id).equal(1);\r",
+							"    pm.expect(target.id).equal(pm.globals.get(\"comment1id\"));\r",
 							"    pm.expect(target.text).equal(source.text, 'текст комментария должен соответствовать тексту комментария в запросе');\r",
-							"    pm.expect(target.authorName).equal(\"Angel Ratke\", 'Имя автора комметария должно соответствовать имени автора в запросе');\r",
-							"    pm.expect(target.created).equal(pm.globals.get('comment1'), 'Время создания комментария должно соответствовать времени создания комментария в запросе');\r",
+							"    pm.expect(target.authorName).equal(pm.globals.get(\"user1\").name, 'Имя автора комметария должно соответствовать имени автора в запросе');\r",
+							"    pm.expect(target.created).equal(pm.globals.get('comment1').created, 'Время создания комментария должно соответствовать времени создания комментария в запросе');\r",
 							"});\r",
 							""
 						],
@@ -363,11 +383,11 @@
 					"variable": [
 						{
 							"key": "uid",
-							"value": "1"
+							"value": "{{user1id}}"
 						},
 						{
 							"key": "eid",
-							"value": "1"
+							"value": "{{event1id}}"
 						}
 					]
 				}
@@ -396,10 +416,10 @@
 							"    pm.response.to.be.withBody;\r",
 							"    pm.response.to.be.json;\r",
 							"});\r",
-							"pm.globals.unset(\"comment1\");\r",
+							"\r",
 							"const source = JSON.parse(pm.request.body.raw);\r",
 							"const target = pm.response.json();\r",
-							"pm.globals.set(\"comment1\", target.created);\r",
+							"\r",
 							"\r",
 							"pm.test(\"Комментарий должен содержать поля: id, text, authorName, created\", function () {\r",
 							"pm.expect(target).to.have.property('id');\r",
@@ -408,11 +428,14 @@
 							"pm.expect(target).to.have.property('created');\r",
 							"});\r",
 							"\r",
+							"pm.globals.unset(\"comment1\");\r",
+							"pm.globals.set(\"comment1\", target);\r",
+							"\r",
 							"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
-							"    pm.expect(target.id).to.not.be.null;\r",
+							"    pm.expect(target.id).equal(pm.globals.get(\"comment1id\"));\r",
 							"    pm.expect(target.text).equal(source.text, 'текст комментария должен соответствовать тексту комментария в запросе');\r",
-							"    pm.expect(target.authorName).equal(\"Angel Ratke\", 'Имя автора комметария должно соответствовать имени автора в запросе');\r",
-							"     pm.expect(target.created).equal(pm.globals.get('comment1'), 'Время создания комментария должно соответствовать времени создания комментария в запросе');\r",
+							"    pm.expect(target.authorName).equal(pm.globals.get(\"comment1\").authorName, 'Имя автора комметария должно соответствовать имени автора в запросе');\r",
+							"     pm.expect(target.created).equal(pm.globals.get('comment1').created, 'Время создания комментария должно соответствовать времени создания комментария в запросе');\r",
 							"});"
 						],
 						"type": "text/javascript",
@@ -446,11 +469,11 @@
 					"variable": [
 						{
 							"key": "uid",
-							"value": "1"
+							"value": "{{user1id}}"
 						},
 						{
 							"key": "cid",
-							"value": "1"
+							"value": "{{comment1id}}"
 						}
 					]
 				}
@@ -472,7 +495,8 @@
 							"\r",
 							"const source = JSON.parse(pm.request.body.raw);\r",
 							"const target = pm.response.json();\r",
-							"pm.globals.set('comment2', target.created);\r",
+							"pm.globals.set('comment2', target);\r",
+							"pm.globals.set('comment2id', target.id);\r",
 							"\r",
 							"pm.test(\"комментарий должен содержать поля: id, text, authorName, created\", function () {\r",
 							"pm.expect(target).to.have.property('id');\r",
@@ -482,10 +506,10 @@
 							"});\r",
 							"\r",
 							"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
-							"    pm.expect(target.id).equal(2);\r",
+							"    pm.expect(target.id).equal(pm.globals.get(\"comment2id\"));\r",
 							"    pm.expect(target.text).equal(source.text, 'текст комментария должен соответствовать тексту комментария в запросе');\r",
-							"    pm.expect(target.authorName).equal(\"Angel Ratke\", 'Имя автора комметария должно соответствовать имени автора в запросе');\r",
-							"    pm.expect(target.created).equal(pm.globals.get('comment2'), 'Время создания комментария должно соответствовать времени создания комментария в запросе');\r",
+							"    pm.expect(target.authorName).equal(pm.globals.get(\"user1\").name, 'Имя автора комметария должно соответствовать имени автора в запросе');\r",
+							"    pm.expect(target.created).equal(pm.globals.get('comment2').created, 'Время создания комментария должно соответствовать времени создания комментария в запросе');\r",
 							"});\r",
 							""
 						],
@@ -521,11 +545,11 @@
 					"variable": [
 						{
 							"key": "uid",
-							"value": "1"
+							"value": "{{user1id}}"
 						},
 						{
 							"key": "eid",
-							"value": "1"
+							"value": "{{event1id}}"
 						}
 					]
 				}
@@ -547,6 +571,8 @@
 							"\r",
 							"const source = JSON.parse(pm.request.body.raw);\r",
 							"const target = pm.response.json();\r",
+							"pm.globals.set('user2', target);\r",
+							"pm.globals.set('user2id', target.id);\r",
 							"\r",
 							"pm.test(\"Пользователь должен содержать поля: id, name, email\", function () {\r",
 							"pm.expect(target).to.have.property('id');\r",
@@ -555,7 +581,7 @@
 							"});\r",
 							"\r",
 							"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
-							"    pm.expect(target.id).equal(2);\r",
+							"    pm.expect(target.id).equal(pm.globals.get(\"user2id\"));\r",
 							"    pm.expect(source.name).equal(target.name, 'Имя пользователя должно соответствовать отправленному в запросе');\r",
 							"    pm.expect(source.email).equal(target.email, 'Почта пользователя должна соответствовать отправленной в запросе');\r",
 							"});"
@@ -605,6 +631,8 @@
 							"\r",
 							"const source = JSON.parse(pm.request.body.raw);\r",
 							"const target = pm.response.json();\r",
+							"pm.globals.set('user3', target);\r",
+							"pm.globals.set('user3id', target.id);\r",
 							"\r",
 							"pm.test(\"Пользователь должен содержать поля: id, name, email\", function () {\r",
 							"pm.expect(target).to.have.property('id');\r",
@@ -613,7 +641,7 @@
 							"});\r",
 							"\r",
 							"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
-							"    pm.expect(target.id).equal(3);\r",
+							"    pm.expect(target.id).equal(pm.globals.get(\"user3id\"));\r",
 							"    pm.expect(source.name).equal(target.name, 'Имя пользователя должно соответствовать отправленному в запросе');\r",
 							"    pm.expect(source.email).equal(target.email, 'Почта пользователя должна соответствовать отправленной в запросе');\r",
 							"});"
@@ -663,7 +691,8 @@
 							"\r",
 							"const source = JSON.parse(pm.request.body.raw);\r",
 							"const target = pm.response.json();\r",
-							"pm.globals.set('comment3', target.created);\r",
+							"pm.globals.set('comment3', target);\r",
+							"pm.globals.set('comment3id', target.id);\r",
 							"\r",
 							"pm.test(\"комментарий должен содержать поля: id, text, authorName, created\", function () {\r",
 							"pm.expect(target).to.have.property('id');\r",
@@ -673,10 +702,10 @@
 							"});\r",
 							"\r",
 							"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
-							"    pm.expect(target.id).equal(3);\r",
+							"    pm.expect(target.id).equal(pm.globals.get(\"comment3id\"));\r",
 							"    pm.expect(target.text).equal(source.text, 'текст комментария должен соответствовать тексту комментария в запросе');\r",
 							"    pm.expect(target.authorName).equal(\"Иван Петров\", 'Имя автора комметария должно соответствовать имени автора в запросе');\r",
-							"    pm.expect(target.created).equal(pm.globals.get('comment3'), 'Время создания комментария должно соответствовать времени создания комментария в запросе');\r",
+							"    pm.expect(target.created).equal(pm.globals.get('comment3').created, 'Время создания комментария должно соответствовать времени создания комментария в запросе');\r",
 							"});\r",
 							""
 						],
@@ -712,11 +741,11 @@
 					"variable": [
 						{
 							"key": "uid",
-							"value": "2"
+							"value": "{{user2id}}"
 						},
 						{
 							"key": "eid",
-							"value": "1"
+							"value": "{{event1id}}"
 						}
 					]
 				}
@@ -738,7 +767,8 @@
 							"\r",
 							"const source = JSON.parse(pm.request.body.raw);\r",
 							"const target = pm.response.json();\r",
-							"pm.globals.set('comment4', target.created);\r",
+							"pm.globals.set('comment4', target);\r",
+							"pm.globals.set('comment4id', target.id);\r",
 							"\r",
 							"pm.test(\"комментарий должен содержать поля: id, text, authorName, created\", function () {\r",
 							"pm.expect(target).to.have.property('id');\r",
@@ -748,10 +778,10 @@
 							"});\r",
 							"\r",
 							"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
-							"    pm.expect(target.id).equal(4);\r",
+							"    pm.expect(target.id).equal(pm.globals.get(\"comment4id\"));\r",
 							"    pm.expect(target.text).equal(source.text, 'текст комментария должен соответствовать тексту комментария в запросе');\r",
 							"    pm.expect(target.authorName).equal(\"Алексей Шведов\", 'Имя автора комметария должно соответствовать имени автора в запросе');\r",
-							"    pm.expect(target.created).equal(pm.globals.get('comment4'), 'Время создания комментария должно соответствовать времени создания комментария в запросе');\r",
+							"    pm.expect(target.created).equal(pm.globals.get('comment4').created, 'Время создания комментария должно соответствовать времени создания комментария в запросе');\r",
 							"});\r",
 							""
 						],
@@ -787,11 +817,11 @@
 					"variable": [
 						{
 							"key": "uid",
-							"value": "3"
+							"value": "{{user3id}}"
 						},
 						{
 							"key": "eid",
-							"value": "1"
+							"value": "{{event1id}}"
 						}
 					]
 				}
@@ -810,7 +840,7 @@
 							"    pm.response.to.be.withBody;\r",
 							"    pm.response.to.be.json;\r",
 							"});\r",
-							"\r",
+							"const source = pm.globals.get(\"comment1\");\r",
 							"const target = pm.response.json();\r",
 							"\r",
 							"pm.test(\"комментарий должен содержать поля: id, text, authorName, created\", function () {\r",
@@ -821,10 +851,10 @@
 							"});\r",
 							"\r",
 							"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
-							"    pm.expect(target.id.toString()).equal(\"1\");\r",
-							"    pm.expect(target.text).equal(\"Мой новый комментарий!\", 'текст комментария должен соответствовать тексту комментария в запросе');\r",
-							"    pm.expect(target.authorName).equal(\"Angel Ratke\", 'Имя автора комметария должно соответствовать имени автора в запросе');\r",
-							"    pm.expect(target.created).equal(pm.globals.get('comment1'), 'Время создания комментария должно соответствовать времени создания комментария в запросе');\r",
+							"    pm.expect(target.id).equal(source.id);\r",
+							"    pm.expect(target.text).equal(source.text, 'текст комментария должен соответствовать тексту комментария в запросе');\r",
+							"    pm.expect(target.authorName).equal(source.authorName, 'Имя автора комметария должно соответствовать имени автора в запросе');\r",
+							"    pm.expect(target.created).equal(source.created, 'Время создания комментария должно соответствовать времени создания комментария в запросе');\r",
 							"});\r",
 							""
 						],
@@ -849,7 +879,7 @@
 					"variable": [
 						{
 							"key": "id",
-							"value": "1"
+							"value": "{{comment1id}}"
 						}
 					]
 				}
@@ -871,6 +901,8 @@
 							"\r",
 							"const source = JSON.parse(pm.request.body.raw);\r",
 							"const target = pm.response.json();\r",
+							"pm.globals.set('event2', target);\r",
+							"pm.globals.set('event2id', target.id);\r",
 							"\r",
 							"pm.test(\"Событие должно содержать поля: id, title, annotation, category, paid, eventDate, initiator, description, participantLimit, state, createdOn, location, requestModeration\", function () {\r",
 							"pm.expect(target).to.have.property('id');\r",
@@ -889,7 +921,7 @@
 							"});\r",
 							"\r",
 							"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
-							"    pm.expect(target.id.toString()).equal(\"2\");\r",
+							"    pm.expect(target.id).equal(pm.globals.get(\"event2id\"));\r",
 							"    pm.expect(target.title).equal(source.title, 'Название события должно соответствовать названию события в запросе');\r",
 							"    pm.expect(target.annotation).equal(source.annotation, 'Аннотация события должна соответствовать аннотации события в запросе');\r",
 							"    pm.expect(target.paid.toString()).equal(source.paid.toString(), 'Стоимость события должна соответствовать стоимости события в запросе');\r",
@@ -902,7 +934,8 @@
 							"});\r",
 							""
 						],
-						"type": "text/javascript"
+						"type": "text/javascript",
+						"packages": {}
 					}
 				}
 			],
@@ -931,7 +964,7 @@
 					"variable": [
 						{
 							"key": "id",
-							"value": "3"
+							"value": "{{user3id}}"
 						}
 					]
 				}
@@ -953,6 +986,8 @@
 							"\r",
 							"const source = JSON.parse(pm.request.body.raw);\r",
 							"const target = pm.response.json();\r",
+							"pm.globals.unset(\"event2\");\r",
+							"pm.globals.set('event2', target);\r",
 							"\r",
 							"pm.test(\"Событие должно содержать поля: id, title, annotation, category, paid, eventDate, initiator, description, participantLimit, state, createdOn, location, requestModeration\", function () {\r",
 							"pm.expect(target).to.have.property('id');\r",
@@ -975,7 +1010,8 @@
 							"    pm.expect(target.state).equal(\"PUBLISHED\", 'Статус события должно соответствовать статусу события в запросе');\r",
 							"});"
 						],
-						"type": "text/javascript"
+						"type": "text/javascript",
+						"packages": {}
 					}
 				}
 			],
@@ -1004,7 +1040,7 @@
 					"variable": [
 						{
 							"key": "id",
-							"value": "2"
+							"value": "{{event2id}}"
 						}
 					]
 				}
@@ -1026,7 +1062,8 @@
 							"\r",
 							"const source = JSON.parse(pm.request.body.raw);\r",
 							"const target = pm.response.json();\r",
-							"pm.globals.set('comment5', target.created);\r",
+							"pm.globals.set('comment5', target);\r",
+							"pm.globals.set('comment5id', target.id);\r",
 							"\r",
 							"pm.test(\"комментарий должен содержать поля: id, text, authorName, created\", function () {\r",
 							"pm.expect(target).to.have.property('id');\r",
@@ -1036,10 +1073,10 @@
 							"});\r",
 							"\r",
 							"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
-							"    pm.expect(target.id.toString()).equal(\"5\");\r",
+							"    pm.expect(target.id).equal(pm.globals.get(\"comment5id\"));\r",
 							"    pm.expect(target.text).equal(source.text, 'текст комментария должен соответствовать тексту комментария в запросе');\r",
 							"    pm.expect(target.authorName).equal(\"Иван Петров\", 'Имя автора комметария должно соответствовать имени автора в запросе');\r",
-							"    pm.expect(target.created).equal(pm.globals.get('comment5'), 'Время создания комментария должно соответствовать времени создания комментария в запросе');\r",
+							"    pm.expect(target.created).equal(pm.globals.get('comment5').created, 'Время создания комментария должно соответствовать времени создания комментария в запросе');\r",
 							"});"
 						],
 						"type": "text/javascript",
@@ -1074,11 +1111,11 @@
 					"variable": [
 						{
 							"key": "uid",
-							"value": "2"
+							"value": "{{user2id}}"
 						},
 						{
 							"key": "eid",
-							"value": "2"
+							"value": "{{event2id}}"
 						}
 					]
 				}
@@ -1097,7 +1134,8 @@
 							"    pm.response.to.be.withBody;\r",
 							"    pm.response.to.be.json;\r",
 							"});\r",
-							"\r",
+							"const com1 = pm.globals.get(\"comment1\");\r",
+							"const com5 = pm.globals.get(\"comment5\");\r",
 							"const target = pm.response.json();\r",
 							"\r",
 							"pm.test(\"Колличество комментариев в ответе должно соответствовать Колличеству комментариев в запросе\", function () {\r",
@@ -1112,10 +1150,10 @@
 							"});\r",
 							"\r",
 							"pm.test(\"Данные в ответе комментария 1 должны соответствовать данным в запросе\", function () {\r",
-							"    pm.expect(target[0].id).equal(1);\r",
-							"    pm.expect(target[0].text).equal(\"Мой новый комментарий!\", 'текст комментария должен соответствовать тексту комментария 1 в запросе');\r",
-							"    pm.expect(target[0].authorName).equal(\"Angel Ratke\", 'Имя автора комметария 1 должно соответствовать имени автора в запросе');\r",
-							"    pm.expect(target[0].created).equal(pm.globals.get('comment1'), 'дата в ответе должна соответствовать дате в запросе');\r",
+							"    pm.expect(target[0].id).equal(com1.id);\r",
+							"    pm.expect(target[0].text).equal(com1.text, 'текст комментария должен соответствовать тексту комментария 1 в запросе');\r",
+							"    pm.expect(target[0].authorName).equal(com1.authorName, 'Имя автора комметария 1 должно соответствовать имени автора в запросе');\r",
+							"    pm.expect(target[0].created).equal(com1.created, 'дата в ответе должна соответствовать дате в запросе');\r",
 							"});\r",
 							"\r",
 							"pm.test(\"комметарий 2 должен содержать поля: id, text, authorName, created\", function () {\r",
@@ -1126,10 +1164,10 @@
 							"});\r",
 							"\r",
 							"pm.test(\"Данные в ответе комментария 2 должны соответствовать данным в запросе\", function () {\r",
-							"    pm.expect(target[1].id).equal(5);\r",
-							"    pm.expect(target[1].text).equal(\"Замечательный комментарий!\", 'текст комментария должен соответствовать тексту комментария 2 в запросе');\r",
-							"    pm.expect(target[1].authorName).equal(\"Иван Петров\", 'Имя автора комметария 2 должно соответствовать имени автора в запросе');\r",
-							"    pm.expect(target[1].created).equal(pm.globals.get('comment5'), 'дата в ответе должна соответствовать дате в запросе');\r",
+							"    pm.expect(target[1].id).equal(com5.id);\r",
+							"    pm.expect(target[1].text).equal(com5.text, 'текст комментария должен соответствовать тексту комментария 2 в запросе');\r",
+							"    pm.expect(target[1].authorName).equal(com5.authorName, 'Имя автора комметария 2 должно соответствовать имени автора в запросе');\r",
+							"    pm.expect(target[1].created).equal(com5.created, 'дата в ответе должна соответствовать дате в запросе');\r",
 							"});\r",
 							""
 						],
@@ -1142,7 +1180,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/admin/comments?commentIds=1&commentIds=5",
+					"raw": "{{baseUrl}}/admin/comments?commentIds={{comment1id}}&commentIds={{comment5id}}",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -1153,11 +1191,11 @@
 					"query": [
 						{
 							"key": "commentIds",
-							"value": "1"
+							"value": "{{comment1id}}"
 						},
 						{
 							"key": "commentIds",
-							"value": "5"
+							"value": "{{comment5id}}"
 						}
 					]
 				}
@@ -1177,24 +1215,25 @@
 							"    pm.response.to.be.json;\r",
 							"});\r",
 							"\r",
+							"const com5 = pm.globals.get(\"comment5\");\r",
 							"const target = pm.response.json();\r",
 							"\r",
 							"pm.test(\"Колличество комментариев в ответе должно соответствовать Колличеству комментариев в запросе\", function () {\r",
 							"    pm.expect(target.length, 'Должен вернуть 1 комментарий').to.eql(1);\r",
 							"});\r",
 							"\r",
-							"pm.test(\"комметарий должен содержать поля: id, text, authorName, created\", function () {\r",
+							"pm.test(\"комметарий 2 должен содержать поля: id, text, authorName, created\", function () {\r",
 							"pm.expect(target[0]).to.have.property('id');\r",
 							"pm.expect(target[0]).to.have.property('text');\r",
 							"pm.expect(target[0]).to.have.property('authorName');\r",
 							"pm.expect(target[0]).to.have.property('created');\r",
 							"});\r",
 							"\r",
-							"pm.test(\"Данные в ответе комментария должны соответствовать данным в запросе\", function () {\r",
-							"    pm.expect(target[0].id).equal(5);\r",
-							"    pm.expect(target[0].text).equal(\"Замечательный комментарий!\", 'текст комментария должен соответствовать тексту комментария в запросе');\r",
-							"    pm.expect(target[0].authorName).equal(\"Иван Петров\", 'Имя автора комметария должно соответствовать имени автора в запросе');\r",
-							"    pm.expect(target[0].created).equal(pm.globals.get('comment5'), 'дата в ответе должна соответствовать дате в запросе');\r",
+							"pm.test(\"Данные в ответе комментария 2 должны соответствовать данным в запросе\", function () {\r",
+							"    pm.expect(target[0].id).equal(com5.id);\r",
+							"    pm.expect(target[0].text).equal(com5.text, 'текст комментария должен соответствовать тексту комментария 2 в запросе');\r",
+							"    pm.expect(target[0].authorName).equal(com5.authorName, 'Имя автора комметария 2 должно соответствовать имени автора в запросе');\r",
+							"    pm.expect(target[0].created).equal(com5.created, 'дата в ответе должна соответствовать дате в запросе');\r",
 							"});\r",
 							""
 						],
@@ -1207,7 +1246,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/admin/comments?eventIds=2",
+					"raw": "{{baseUrl}}/admin/comments?eventIds={{event2id}}",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -1218,7 +1257,7 @@
 					"query": [
 						{
 							"key": "eventIds",
-							"value": "2"
+							"value": "{{event2id}}"
 						}
 					]
 				}
@@ -1238,6 +1277,7 @@
 							"    pm.response.to.be.json;\r",
 							"});\r",
 							"\r",
+							"const com4 = pm.globals.get(\"comment4\");\r",
 							"const target = pm.response.json();\r",
 							"\r",
 							"pm.test(\"Колличество комментариев в ответе должно соответствовать Колличеству комментариев в запросе\", function () {\r",
@@ -1252,10 +1292,10 @@
 							"});\r",
 							"\r",
 							"pm.test(\"Данные в ответе комментария должны соответствовать данным в запросе\", function () {\r",
-							"    pm.expect(target[0].id).equal(4);\r",
-							"    pm.expect(target[0].text).equal(\"вот оно величайшее не чего!\", 'текст комментария должен соответствовать тексту комментария в запросе');\r",
-							"    pm.expect(target[0].authorName).equal(\"Алексей Шведов\", 'Имя автора комметария должно соответствовать имени автора в запросе');\r",
-							"    pm.expect(target[0].created).equal(pm.globals.get('comment4'), 'дата в ответе должна соответствовать дате в запросе');\r",
+							"    pm.expect(target[0].id).equal(com4.id);\r",
+							"    pm.expect(target[0].text).equal(com4.text, 'текст комментария должен соответствовать тексту комментария в запросе');\r",
+							"    pm.expect(target[0].authorName).equal(com4.authorName, 'Имя автора комметария должно соответствовать имени автора в запросе');\r",
+							"    pm.expect(target[0].created).equal(com4.created, 'дата в ответе должна соответствовать дате в запросе');\r",
 							"});"
 						],
 						"type": "text/javascript",
@@ -1267,7 +1307,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/admin/comments?userIds=3",
+					"raw": "{{baseUrl}}/admin/comments?userIds={{user3id}}",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -1278,7 +1318,7 @@
 					"query": [
 						{
 							"key": "userIds",
-							"value": "3"
+							"value": "{{user3id}}"
 						}
 					]
 				}
@@ -1298,6 +1338,7 @@
 							"    pm.response.to.be.json;\r",
 							"});\r",
 							"\r",
+							"const com3 = pm.globals.get(\"comment3\");\r",
 							"const target = pm.response.json();\r",
 							"\r",
 							"pm.test(\"Колличество комментариев в ответе должно соответствовать Колличеству комментариев в запросе\", function () {\r",
@@ -1312,10 +1353,10 @@
 							"});\r",
 							"\r",
 							"pm.test(\"Данные в ответе комментария должны соответствовать данным в запросе\", function () {\r",
-							"    pm.expect(target[0].id).equal(3);\r",
-							"    pm.expect(target[0].text).equal(\"что то новенькое!\", 'текст комментария должен соответствовать тексту комментария в запросе');\r",
-							"    pm.expect(target[0].authorName).equal(\"Иван Петров\", 'Имя автора комметария должно соответствовать имени автора в запросе');\r",
-							"    pm.expect(target[0].created).equal(pm.globals.get('comment3'), 'дата в ответе должна соответствовать дате в запросе');\r",
+							"    pm.expect(target[0].id).equal(com3.id);\r",
+							"    pm.expect(target[0].text).equal(com3.text, 'текст комментария должен соответствовать тексту комментария в запросе');\r",
+							"    pm.expect(target[0].authorName).equal(com3.authorName, 'Имя автора комметария должно соответствовать имени автора в запросе');\r",
+							"    pm.expect(target[0].created).equal(com3.created, 'дата в ответе должна соответствовать дате в запросе');\r",
 							"});"
 						],
 						"type": "text/javascript",
@@ -1375,7 +1416,7 @@
 							"    pm.expect(target[0].id).equal(5);\r",
 							"    pm.expect(target[0].text).equal(\"Замечательный комментарий!\", 'текст комментария должен соответствовать тексту комментария в запросе');\r",
 							"    pm.expect(target[0].authorName).equal(\"Иван Петров\", 'Имя автора комметария должно соответствовать имени автора в запросе');\r",
-							"    pm.expect(target[0].created).equal(pm.globals.get('comment5'), 'дата в ответе должна соответствовать дате в запросе');\r",
+							"    pm.expect(target[0].created).equal(pm.globals.get('comment5').created, 'дата в ответе должна соответствовать дате в запросе');\r",
 							"});\r",
 							""
 						],
@@ -1388,7 +1429,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/admin/comments?text=КоМм&userIds=2",
+					"raw": "{{baseUrl}}/admin/comments?text=КоМм&userIds={{user2id}}",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -1403,7 +1444,7 @@
 						},
 						{
 							"key": "userIds",
-							"value": "2"
+							"value": "{{user2id}}"
 						}
 					]
 				}
@@ -1440,7 +1481,7 @@
 							"    pm.expect(target[0].id).equal(1);\r",
 							"    pm.expect(target[0].text).equal(\"Мой новый комментарий!\", 'текст комментария должен соответствовать тексту комментария 1 в запросе');\r",
 							"    pm.expect(target[0].authorName).equal(\"Angel Ratke\", 'Имя автора комметария 1 должно соответствовать имени автора в запросе');\r",
-							"    pm.expect(target[0].created).equal(pm.globals.get('comment1'), 'дата в ответе должна соответствовать дате в запросе');\r",
+							"    pm.expect(target[0].created).equal(pm.globals.get('comment1').created, 'дата в ответе должна соответствовать дате в запросе');\r",
 							"});\r",
 							"\r",
 							"pm.test(\"комметарий 2 должен содержать поля: id, text, authorName, created\", function () {\r",
@@ -1454,7 +1495,7 @@
 							"    pm.expect(target[1].id).equal(2);\r",
 							"    pm.expect(target[1].text).equal(\"Мой второй комментарий!\", 'текст комментария должен соответствовать тексту комментария 2 в запросе');\r",
 							"    pm.expect(target[1].authorName).equal(\"Angel Ratke\", 'Имя автора комметария 2 должно соответствовать имени автора в запросе');\r",
-							"    pm.expect(target[1].created).equal(pm.globals.get('comment2'), 'дата в ответе должна соответствовать дате в запросе');\r",
+							"    pm.expect(target[1].created).equal(pm.globals.get('comment2').created, 'дата в ответе должна соответствовать дате в запросе');\r",
 							"});\r",
 							""
 						],
@@ -1467,7 +1508,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/admin/comments?text=КоМм&eventIds=1",
+					"raw": "{{baseUrl}}/admin/comments?text=КоМм&eventIds={{event1id}}",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -1482,7 +1523,7 @@
 						},
 						{
 							"key": "eventIds",
-							"value": "1"
+							"value": "{{event1id}}"
 						}
 					]
 				}
@@ -1502,24 +1543,25 @@
 							"    pm.response.to.be.json;\r",
 							"});\r",
 							"\r",
+							"const com5 = pm.globals.get(\"comment5\");\r",
 							"const target = pm.response.json();\r",
 							"\r",
 							"pm.test(\"Колличество комментариев в ответе должно соответствовать Колличеству комментариев в запросе\", function () {\r",
 							"    pm.expect(target.length, 'Должен вернуть 1 комментарий').to.eql(1);\r",
 							"});\r",
 							"\r",
-							"pm.test(\"комметарий должен содержать поля: id, text, authorName, created\", function () {\r",
+							"pm.test(\"комметарий 2 должен содержать поля: id, text, authorName, created\", function () {\r",
 							"pm.expect(target[0]).to.have.property('id');\r",
 							"pm.expect(target[0]).to.have.property('text');\r",
 							"pm.expect(target[0]).to.have.property('authorName');\r",
 							"pm.expect(target[0]).to.have.property('created');\r",
 							"});\r",
 							"\r",
-							"pm.test(\"Данные в ответе комментария должны соответствовать данным в запросе\", function () {\r",
-							"    pm.expect(target[0].id).equal(5);\r",
-							"    pm.expect(target[0].text).equal(\"Замечательный комментарий!\", 'текст комментария должен соответствовать тексту комментария в запросе');\r",
-							"    pm.expect(target[0].authorName).equal(\"Иван Петров\", 'Имя автора комметария должно соответствовать имени автора в запросе');\r",
-							"    pm.expect(target[0].created).equal(pm.globals.get('comment5'), 'дата в ответе должна соответствовать дате в запросе');\r",
+							"pm.test(\"Данные в ответе комментария 2 должны соответствовать данным в запросе\", function () {\r",
+							"    pm.expect(target[0].id).equal(com5.id);\r",
+							"    pm.expect(target[0].text).equal(com5.text, 'текст комментария должен соответствовать тексту комментария 2 в запросе');\r",
+							"    pm.expect(target[0].authorName).equal(com5.authorName, 'Имя автора комметария 2 должно соответствовать имени автора в запросе');\r",
+							"    pm.expect(target[0].created).equal(com5.created, 'дата в ответе должна соответствовать дате в запросе');\r",
 							"});"
 						],
 						"type": "text/javascript",
@@ -1531,7 +1573,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/admin/comments?start=2024-03-13 12:00:00&commentIds=5",
+					"raw": "{{baseUrl}}/admin/comments?start=2024-03-13 12:00:00&commentIds={{comment5id}}",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -1546,7 +1588,7 @@
 						},
 						{
 							"key": "commentIds",
-							"value": "5"
+							"value": "{{comment5id}}"
 						}
 					]
 				}
@@ -1612,24 +1654,25 @@
 							"    pm.response.to.be.json;\r",
 							"});\r",
 							"\r",
+							"const com5 = pm.globals.get(\"comment5\");\r",
 							"const target = pm.response.json();\r",
 							"\r",
 							"pm.test(\"Колличество комментариев в ответе должно соответствовать Колличеству комментариев в запросе\", function () {\r",
 							"    pm.expect(target.length, 'Должен вернуть 1 комментарий').to.eql(1);\r",
 							"});\r",
 							"\r",
-							"pm.test(\"комметарий должен содержать поля: id, text, authorName, created\", function () {\r",
+							"pm.test(\"комметарий 2 должен содержать поля: id, text, authorName, created\", function () {\r",
 							"pm.expect(target[0]).to.have.property('id');\r",
 							"pm.expect(target[0]).to.have.property('text');\r",
 							"pm.expect(target[0]).to.have.property('authorName');\r",
 							"pm.expect(target[0]).to.have.property('created');\r",
 							"});\r",
 							"\r",
-							"pm.test(\"Данные в ответе комментария должны соответствовать данным в запросе\", function () {\r",
-							"    pm.expect(target[0].id).equal(5);\r",
-							"    pm.expect(target[0].text).equal(\"Замечательный комментарий!\", 'текст комментария должен соответствовать тексту комментария в запросе');\r",
-							"    pm.expect(target[0].authorName).equal(\"Иван Петров\", 'Имя автора комметария должно соответствовать имени автора в запросе');\r",
-							"    pm.expect(target[0].created).equal(pm.globals.get('comment5'), 'дата в ответе должна соответствовать дате в запросе');\r",
+							"pm.test(\"Данные в ответе комментария 2 должны соответствовать данным в запросе\", function () {\r",
+							"    pm.expect(target[0].id).equal(com5.id);\r",
+							"    pm.expect(target[0].text).equal(com5.text, 'текст комментария должен соответствовать тексту комментария 2 в запросе');\r",
+							"    pm.expect(target[0].authorName).equal(com5.authorName, 'Имя автора комметария 2 должно соответствовать имени автора в запросе');\r",
+							"    pm.expect(target[0].created).equal(com5.created, 'дата в ответе должна соответствовать дате в запросе');\r",
 							"});"
 						],
 						"type": "text/javascript",
@@ -1641,7 +1684,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/admin/comments?end=2030-03-13 12:00:00&commentIds=5",
+					"raw": "{{baseUrl}}/admin/comments?end=2030-03-13 12:00:00&commentIds={{comment5id}}",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -1656,7 +1699,7 @@
 						},
 						{
 							"key": "commentIds",
-							"value": "5"
+							"value": "{{comment5id}}"
 						}
 					]
 				}
@@ -1721,25 +1764,25 @@
 							"    pm.response.to.be.withBody;\r",
 							"    pm.response.to.be.json;\r",
 							"});\r",
-							"\r",
+							"const com5 = pm.globals.get(\"comment5\");\r",
 							"const target = pm.response.json().comments;\r",
 							"\r",
 							"pm.test(\"Колличество комментариев в ответе должно соответствовать Колличеству комментариев в запросе\", function () {\r",
 							"    pm.expect(target.length, 'Должен вернуть 1 комментарий').to.eql(1);\r",
 							"});\r",
 							"\r",
-							"pm.test(\"комметарий должен содержать поля: id, text, authorName, created\", function () {\r",
+							"pm.test(\"комметарий 2 должен содержать поля: id, text, authorName, created\", function () {\r",
 							"pm.expect(target[0]).to.have.property('id');\r",
 							"pm.expect(target[0]).to.have.property('text');\r",
 							"pm.expect(target[0]).to.have.property('authorName');\r",
 							"pm.expect(target[0]).to.have.property('created');\r",
 							"});\r",
 							"\r",
-							"pm.test(\"Данные в ответе комментария должны соответствовать данным в запросе\", function () {\r",
-							"    pm.expect(target[0].id).equal(5);\r",
-							"    pm.expect(target[0].text).equal(\"Замечательный комментарий!\", 'текст комментария должен соответствовать тексту комментария в запросе');\r",
-							"    pm.expect(target[0].authorName).equal(\"Иван Петров\", 'Имя автора комметария должно соответствовать имени автора в запросе');\r",
-							"    pm.expect(target[0].created).equal(pm.globals.get('comment5'), 'дата в ответе должна соответствовать дате в запросе');\r",
+							"pm.test(\"Данные в ответе комментария 2 должны соответствовать данным в запросе\", function () {\r",
+							"    pm.expect(target[0].id).equal(com5.id);\r",
+							"    pm.expect(target[0].text).equal(com5.text, 'текст комментария должен соответствовать тексту комментария 2 в запросе');\r",
+							"    pm.expect(target[0].authorName).equal(com5.authorName, 'Имя автора комметария 2 должно соответствовать имени автора в запросе');\r",
+							"    pm.expect(target[0].created).equal(com5.created, 'дата в ответе должна соответствовать дате в запросе');\r",
 							"});"
 						],
 						"type": "text/javascript",
@@ -1764,11 +1807,11 @@
 					"variable": [
 						{
 							"key": "uid",
-							"value": "3"
+							"value": "{{user3id}}"
 						},
 						{
 							"key": "eid",
-							"value": "2"
+							"value": "{{event2id}}"
 						}
 					]
 				}
@@ -1820,11 +1863,11 @@
 					"variable": [
 						{
 							"key": "uid",
-							"value": "1"
+							"value": "{{user1id}}"
 						},
 						{
 							"key": "eid",
-							"value": "1"
+							"value": "{{event1id}}"
 						}
 					]
 				}
@@ -1876,11 +1919,11 @@
 					"variable": [
 						{
 							"key": "uid",
-							"value": "1"
+							"value": "{{user1id}}"
 						},
 						{
 							"key": "eid",
-							"value": "1"
+							"value": "{{event1id}}"
 						}
 					]
 				}
@@ -1932,11 +1975,11 @@
 					"variable": [
 						{
 							"key": "uid",
-							"value": "1"
+							"value": "{{user1id}}"
 						},
 						{
 							"key": "eid",
-							"value": "1"
+							"value": "{{event1id}}"
 						}
 					]
 				}
@@ -1988,11 +2031,11 @@
 					"variable": [
 						{
 							"key": "uid",
-							"value": "1"
+							"value": "{{user1id}}"
 						},
 						{
 							"key": "eid",
-							"value": "1"
+							"value": "{{event1id}}"
 						}
 					]
 				}
@@ -2014,7 +2057,8 @@
 							"\r",
 							"const source = JSON.parse(pm.request.body.raw);\r",
 							"const target = pm.response.json();\r",
-							"pm.globals.set('comment6', target.created);\r",
+							"pm.globals.set('comment6', target);\r",
+							"pm.globals.set('comment6id', target.id);\r",
 							"\r",
 							"pm.test(\"комментарий должен содержать поля: id, text, authorName, created\", function () {\r",
 							"pm.expect(target).to.have.property('id');\r",
@@ -2024,10 +2068,10 @@
 							"});\r",
 							"\r",
 							"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
-							"    pm.expect(target.id).equal(6);\r",
+							"    pm.expect(target.id).equal(pm.globals.get(\"comment6id\"));\r",
 							"    pm.expect(target.text).equal(source.text, 'текст комментария должен соответствовать тексту комментария в запросе');\r",
-							"    pm.expect(target.authorName).equal(\"Angel Ratke\", 'Имя автора комметария должно соответствовать имени автора в запросе');\r",
-							"    pm.expect(target.created).equal(pm.globals.get('comment6'), 'Время создания комментария должно соответствовать времени создания комментария в запросе');\r",
+							"    pm.expect(target.authorName).equal(pm.globals.get('comment6').authorName, 'Имя автора комметария должно соответствовать имени автора в запросе');\r",
+							"    pm.expect(target.created).equal(pm.globals.get('comment6').created, 'Время создания комментария должно соответствовать времени создания комментария в запросе');\r",
 							"});"
 						],
 						"type": "text/javascript",
@@ -2062,11 +2106,11 @@
 					"variable": [
 						{
 							"key": "uid",
-							"value": "1"
+							"value": "{{user1id}}"
 						},
 						{
 							"key": "eid",
-							"value": "1"
+							"value": "{{event1id}}"
 						}
 					]
 				}
@@ -2122,7 +2166,7 @@
 						},
 						{
 							"key": "eid",
-							"value": "2"
+							"value": "{{event2id}}"
 						}
 					]
 				}
@@ -2174,7 +2218,7 @@
 					"variable": [
 						{
 							"key": "uid",
-							"value": "1"
+							"value": "{{user1id}}"
 						},
 						{
 							"key": "eid",
@@ -2229,11 +2273,11 @@
 					"variable": [
 						{
 							"key": "uid",
-							"value": "2"
+							"value": "{{user2id}}"
 						},
 						{
 							"key": "cid",
-							"value": "1"
+							"value": "{{comment1id}}"
 						}
 					]
 				}
@@ -2288,7 +2332,7 @@
 						},
 						{
 							"key": "cid",
-							"value": "1"
+							"value": "{{comment1id}}"
 						}
 					]
 				}
@@ -2339,7 +2383,7 @@
 					"variable": [
 						{
 							"key": "uid",
-							"value": "1"
+							"value": "{{comment1id}}"
 						},
 						{
 							"key": "cid",
@@ -2406,6 +2450,16 @@
 						"type": "text/javascript",
 						"packages": {}
 					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
 				}
 			],
 			"request": {
@@ -2468,11 +2522,11 @@
 					"variable": [
 						{
 							"key": "uid",
-							"value": "1"
+							"value": "{{user1id}}"
 						},
 						{
 							"key": "cid",
-							"value": "2"
+							"value": "{{comment2id}}"
 						}
 					]
 				}
@@ -2491,10 +2545,11 @@
 							"    pm.response.to.be.withBody;\r",
 							"    pm.response.to.be.json;\r",
 							"});\r",
-							"pm.globals.unset(\"comment2\");\r",
+							"\r",
 							"const source = JSON.parse(pm.request.body.raw);\r",
 							"const target = pm.response.json();\r",
-							"pm.globals.set(\"comment2\", target.created);\r",
+							"pm.globals.unset(\"comment2\");\r",
+							"pm.globals.set(\"comment2\", target);\r",
 							"\r",
 							"pm.test(\"комментарий должен содержать поля: id, text, authorName, created\", function () {\r",
 							"pm.expect(target).to.have.property('id');\r",
@@ -2504,10 +2559,10 @@
 							"});\r",
 							"\r",
 							"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
-							"    pm.expect(target.id).equal(2);\r",
+							"    pm.expect(target.id).equal(pm.globals.get(\"comment2id\"));\r",
 							"    pm.expect(target.text).equal(source.text, 'текст комментария должен соответствовать тексту комментария в запросе');\r",
-							"    pm.expect(target.authorName).equal(\"Angel Ratke\", 'Имя автора комметария должно соответствовать имени автора в запросе');\r",
-							"     pm.expect(target.created).equal(pm.globals.get('comment2'), 'Время создания комментария должно соответствовать времени создания комментария в запросе');\r",
+							"    pm.expect(target.authorName).equal(pm.globals.get('comment2').authorName, 'Имя автора комметария должно соответствовать имени автора в запросе');\r",
+							"     pm.expect(target.created).equal(pm.globals.get('comment2').created, 'Время создания комментария должно соответствовать времени создания комментария в запросе');\r",
 							"});"
 						],
 						"type": "text/javascript",
@@ -2541,11 +2596,11 @@
 					"variable": [
 						{
 							"key": "uid",
-							"value": "1"
+							"value": "{{user1id}}"
 						},
 						{
 							"key": "cid",
-							"value": "2"
+							"value": "{{comment2id}}"
 						}
 					]
 				}
@@ -2596,11 +2651,11 @@
 					"variable": [
 						{
 							"key": "uid",
-							"value": "1"
+							"value": "{{user1id}}"
 						},
 						{
 							"key": "cid",
-							"value": "2"
+							"value": "{{comment2id}}"
 						}
 					]
 				}
@@ -2651,11 +2706,11 @@
 					"variable": [
 						{
 							"key": "uid",
-							"value": "1"
+							"value": "{{user1id}}"
 						},
 						{
 							"key": "cid",
-							"value": "2"
+							"value": "{{comment2id}}"
 						}
 					]
 				}
@@ -2706,11 +2761,11 @@
 					"variable": [
 						{
 							"key": "uid",
-							"value": "1"
+							"value": "{{user1id}}"
 						},
 						{
 							"key": "cid",
-							"value": "2"
+							"value": "{{comment2id}}"
 						}
 					]
 				}
@@ -2739,7 +2794,7 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/admin/comments?ids=1000&ids=2",
+					"raw": "{{baseUrl}}/admin/comments?ids=1000&ids={{comment2id}}",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -2754,7 +2809,7 @@
 						},
 						{
 							"key": "ids",
-							"value": "2"
+							"value": "{{comment2id}}"
 						}
 					]
 				}
@@ -2781,7 +2836,7 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/admin/comments?ids=1&ids=3&ids=4&ids=5&ids=6",
+					"raw": "{{baseUrl}}/admin/comments?ids={{comment1id}}&ids={{comment3id}}&ids={{comment4id}}&ids={{comment5id}}&ids={{comment6id}}",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -2792,23 +2847,23 @@
 					"query": [
 						{
 							"key": "ids",
-							"value": "1"
+							"value": "{{comment1id}}"
 						},
 						{
 							"key": "ids",
-							"value": "3"
+							"value": "{{comment3id}}"
 						},
 						{
 							"key": "ids",
-							"value": "4"
+							"value": "{{comment4id}}"
 						},
 						{
 							"key": "ids",
-							"value": "5"
+							"value": "{{comment5id}}"
 						},
 						{
 							"key": "ids",
-							"value": "6"
+							"value": "{{comment6id}}"
 						}
 					]
 				}
@@ -2844,6 +2899,11 @@
 		},
 		{
 			"key": "response",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "eid",
 			"value": "",
 			"type": "string"
 		}
