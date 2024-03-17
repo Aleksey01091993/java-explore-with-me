@@ -19,9 +19,17 @@ import java.util.List;
 public class Compilation implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
     @ManyToMany
+    @JoinTable(
+            name = "compilation_events",
+            joinColumns = @JoinColumn(name = "compilation_id"),
+            inverseJoinColumns = @JoinColumn(name = "events_id")
+    )
     private List<Event> events;
+    @Column(name = "pinned")
     private Boolean pinned;
+    @Column(name = "title", length = 50)
     private String title;
 }

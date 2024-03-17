@@ -9,16 +9,16 @@ services:
     depends_on:
       - db
     environment:
-      - BD=jdbc:postgresql://db:5432/postgres
+      - BD=jdbc:postgresql://db:5432/postgres_stats
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=pass
   db:
     image: postgres:13.7-alpine
-    container_name: some_postgres
+    container_name: stats_postgres
     ports:
       - "5433:5432"
     environment:
-      - POSTGRES_DB=postgres
+      - POSTGRES_DB=postgres_stats
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=pass
       - DB_HOST=db
@@ -31,9 +31,20 @@ services:
       - "8080:8080"
     depends_on:
       - stats-server
-      - db
+      - db1
     environment:
-      - BD=jdbc:postgresql://db:5432/postgres
+      - BD=jdbc:postgresql://db1:5432/postgres_main
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=pass
+  db1:
+    image: postgres:13.7-alpine
+    container_name: main-postgres
+    ports:
+      - "5470:5432"
+    environment:
+      - POSTGRES_DB=postgres_main
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=pass
+      - DB_HOST=db1
+      - DB_PORT=5432
 

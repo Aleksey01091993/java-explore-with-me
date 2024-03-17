@@ -21,12 +21,17 @@ import java.time.LocalDateTime;
 public class Request implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
     @ManyToOne
+    @JoinColumn(name = "event_id", referencedColumnName = "id")
     private Event event;
     @ManyToOne
+    @JoinColumn(name = "requester_id", referencedColumnName = "id")
     private User requester;
     @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     private Status status;
+    @Column(name = "created")
     private LocalDateTime created;
 }

@@ -24,8 +24,10 @@ public class Comments implements Serializable {
     @Column(name = "text", length = 7000)
     private String text;
     @ManyToOne(optional = false)
+    @JoinColumn(name = "event_id", referencedColumnName = "id")
     private Event event;
-    @ManyToOne
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "author_id", referencedColumnName = "id")
     private User author;
     @Column(name = "created_time")
     private LocalDateTime created;
