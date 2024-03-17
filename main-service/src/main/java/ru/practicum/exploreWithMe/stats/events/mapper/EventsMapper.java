@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import ru.practicum.exploreWithMe.stats.categories.mapper.MapperCategories;
 import ru.practicum.exploreWithMe.stats.categories.model.Categories;
+import ru.practicum.exploreWithMe.stats.coments.mapper.CommentMapper;
 import ru.practicum.exploreWithMe.stats.events.dto.*;
 import ru.practicum.exploreWithMe.stats.events.model.Event;
 import ru.practicum.exploreWithMe.stats.querydsl.EventFilterModel;
@@ -112,6 +113,10 @@ public class EventsMapper {
                 .state(event.getState())
                 .title(event.getTitle())
                 .views(event.getViews())
+                .comments(event.getComments() == null ? null : event.getComments().stream()
+                        .map(CommentMapper::toResponse)
+                        .collect(Collectors.toList())
+                )
                 .build();
     }
 
@@ -133,6 +138,8 @@ public class EventsMapper {
                 .state(event.getState())
                 .title(event.getTitle())
                 .views(event.getViews())
+                .comments(event.getComments() == null ? null :
+                        event.getComments().stream().map(CommentMapper::toResponse).collect(Collectors.toList()))
                 .build();
     }
 
@@ -208,17 +215,19 @@ public class EventsMapper {
         return event;
     }
 
-    public static EventShortDto toGetAll(Event events) {
+    public static EventShortDto toGetAll(Event event) {
         return EventShortDto.builder()
-                .id(events.getId())
-                .annotation(events.getAnnotation())
-                .category(MapperCategories.toCategoryDto(events.getCategory()))
-                .confirmedRequests(events.getConfirmedRequest())
-                .eventDate(events.getEventDate() == null ? null : events.getEventDate().format(DTF))
-                .initiator(UserMapper.toUserShortDto(events.getInitiator()))
-                .paid(events.getPaid())
-                .title(events.getTitle())
-                .views(events.getViews())
+                .id(event.getId())
+                .annotation(event.getAnnotation())
+                .category(MapperCategories.toCategoryDto(event.getCategory()))
+                .confirmedRequests(event.getConfirmedRequest())
+                .eventDate(event.getEventDate() == null ? null : event.getEventDate().format(DTF))
+                .initiator(UserMapper.toUserShortDto(event.getInitiator()))
+                .paid(event.getPaid())
+                .title(event.getTitle())
+                .views(event.getViews())
+                .comments(event.getComments() == null ? null :
+                        event.getComments().stream().map(CommentMapper::toResponse).collect(Collectors.toList()))
                 .build();
     }
 }

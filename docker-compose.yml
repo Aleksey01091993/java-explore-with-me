@@ -1,38 +1,50 @@
 version: '3.8'
 services:
-  main-service:
-    build: /main-service
-    image: service_image
-    container_name: service_container
-    ports:
-      - "8080:8080"
-    depends_on:
-      - stats-server
-      - db
-    environment:
-      - BD=jdbc:postgresql://db:5432/postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=pass
   stats-server:
     build: /stats/stats-server
-    image: service_image
-    container_name: stats-server
+    image: stats-server
+    container_name: stats_server
     ports:
       - "9090:9090"
     depends_on:
       - db
     environment:
-      - BD=jdbc:postgresql://db:5432/postgres
+      - BD=jdbc:postgresql://db:5432/postgres_stats
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=pass
   db:
     image: postgres:13.7-alpine
-    container_name: some_postgres
+    container_name: stats_postgres
     ports:
       - "5433:5432"
     environment:
-      - POSTGRES_DB=postgres
+      - POSTGRES_DB=postgres_stats
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=pass
       - DB_HOST=db
       - DB_PORT=5432
+  main-service:
+    build: /main-service
+    image: main-service
+    container_name: main-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - stats-server
+      - db1
+    environment:
+      - BD=jdbc:postgresql://db1:5432/postgres_main
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=pass
+  db1:
+    image: postgres:13.7-alpine
+    container_name: main-postgres
+    ports:
+      - "5470:5432"
+    environment:
+      - POSTGRES_DB=postgres_main
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=pass
+      - DB_HOST=db1
+      - DB_PORT=5432
+
